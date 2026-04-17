@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Solicitud de Ingreso - Grupo Bios</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--azul:#185FA5;--bg:#F5F4F0;--surface:#FFFFFF;--border:#E0DED6;--border2:#C5C3BB;--text:#1A1918;--text2:#6B6A65;--r:8px;--rl:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg);min-height:100vh;-webkit-font-smoothing:antialiased}
+.app{max-width:480px;margin:0 auto;padding-bottom:40px}
+.topbar{background:var(--azul);padding:14px 16px;display:flex;align-items:center;gap:10px}
+.bios-logo{background:white;border-radius:6px;padding:4px 8px;display:flex;align-items:center;flex-shrink:0}
+.bios-logo span{color:#2d7a3a;font-weight:800;font-size:14px}
+.bios-logo span.big{font-size:17px}
+.topbar-info h1{font-size:15px;font-weight:600;color:white;line-height:1.2}
+.topbar-info p{font-size:11px;color:rgba(255,255,255,.72)}
+.mode-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border)}
+.mode-tab{flex:1;padding:14px;border:none;background:transparent;font-size:13px;color:var(--text2);border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;font-weight:500}
+.mode-tab.on{color:var(--azul);border-bottom-color:var(--azul);font-weight:600}
+.pane{display:none;padding:12px}
+.pane.on{display:block}
+.card{background:var(--surface);border-radius:var(--rl);border:0.5px solid var(--border);padding:16px;margin-bottom:12px}
+.sec{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.field label{font-size:12px;color:var(--text2);font-weight:600}
+.field input,.field select,.field textarea{height:46px;border:1.5px solid var(--border2);border-radius:var(--r);padding:0 12px;font-size:15px;color:var(--text);background:var(--surface);width:100%;-webkit-appearance:none;font-family:inherit}
+.field input:focus,.field select:focus{outline:none;border-color:var(--azul)}
+.field textarea{height:76px;padding:10px 12px;resize:none}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.upload-label{display:block;border:2px dashed var(--border2);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;margin-bottom:0}
+.upload-label input{display:none}
+.upload-ic{font-size:28px;margin-bottom:6px}
+.upload-label strong{display:block;font-size:14px;color:var(--azul);font-weight:600;margin-bottom:3px}
+.upload-label p{font-size:12px;color:var(--text2)}
+.foto-preview{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--azul);display:block;margin:10px auto 0}
+.curso-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;background:var(--surface)}
+.curso-nombre{font-size:13px;font-weight:600}
+.curso-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.curso-toggle{display:flex;gap:6px}
+.curso-btn{height:30px;padding:0 10px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--text2)}
+.curso-btn.sel-si{background:#EAF3DE;border-color:#3B6D11;color:#27500A}
+.curso-btn.sel-no{background:#FCEBEB;border-color:#A32D2D;color:#791F1F}
+.curso-oblig{background:#E6F1FB;border-color:#185FA5}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:600}
+.b-ok{background:#EAF3DE;color:#27500A}
+.b-err{background:#FCEBEB;color:#791F1F}
+.b-warn{background:#FAEEDA;color:#633806}
+.b-info{background:#E6F1FB;color:#0C447C}
+.prog-bar{height:6px;background:var(--border);border-radius:3px;margin:16px 12px 4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;background:var(--azul);transition:width .3s}
+.prog-lbl{font-size:12px;color:var(--text2);margin:0 12px 12px}
+.btn{width:calc(100% - 24px);margin:0 12px;height:50px;border-radius:var(--r);border:none;background:var(--azul);color:white;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;display:block}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.alert{border-radius:var(--r);padding:12px 14px;font-size:13px;margin-top:10px;line-height:1.5}
+.a-ok{background:#EAF3DE;color:#27500A;border:1px solid #97C459}
+.a-err{background:#FCEBEB;color:#791F1F;border:1px solid #F09595}
+.a-warn{background:#FAEEDA;color:#633806;border:1px solid #EF9F27}
+.ia-box{background:var(--bg);border-radius:var(--r);padding:12px;margin-top:10px;border:0.5px solid var(--border)}
+.ia-title{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.ia-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--border);gap:8px}
+.ia-row:last-child{border-bottom:none}
+.ia-k{font-size:12px;color:var(--text2);flex-shrink:0}
+.ia-v{font-size:12px;font-weight:600;text-align:right}
+.ia-v.ok{color:#3B6D11}
+.ia-v.err{color:#791F1F}
+.ia-loading{text-align:center;padding:16px;color:var(--text2);font-size:13px}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--azul);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.semaforo{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);margin-top:10px;border:2px solid}
+.sem-verde{background:#EAF3DE;border-color:#3B6D11}
+.sem-amarillo{background:#FAEEDA;border-color:#854F0B}
+.sem-rojo{background:#FCEBEB;border-color:#A32D2D}
+.sem-dot{width:18px;height:18px;border-radius:50%;flex-shrink:0}
+.sem-dot-v{background:#639922}
+.sem-dot-a{background:#EF9F27}
+.sem-dot-r{background:#E24B4A}
+.sem-texto{flex:1}
+.sem-titulo{font-size:13px;font-weight:700}
+.sem-sub{font-size:12px;margin-top:2px}
+.val-result{border-radius:var(--r);padding:14px;margin-top:10px;border:2px solid}
+.val-ok{background:#EAF3DE;border-color:#3B6D11}
+.val-err{background:#FCEBEB;border-color:#A32D2D}
+.val-warn{background:#FAEEDA;border-color:#854F0B}
+.val-title{font-size:13px;font-weight:700;margin-bottom:8px}
+.val-item{font-size:12px;padding:3px 0;display:flex;align-items:flex-start;gap:6px}
+.exito-box{text-align:center;padding:40px 20px}
+.exito-ic{font-size:64px;margin-bottom:16px}
+.exito-titulo{font-size:22px;font-weight:700;color:#3B6D11;margin-bottom:8px}
+.exito-sub{font-size:14px;color:var(--text2);line-height:1.6}
+/* Masivo */
+.persona-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:12px;overflow:hidden}
+.persona-header{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg);cursor:pointer}
+.persona-check{width:22px;height:22px;flex-shrink:0;accent-color:var(--azul)}
+.persona-nombre{font-weight:600;font-size:14px;flex:1}
+.persona-cedula{font-size:12px;color:var(--text2)}
+.persona-body{padding:14px;border-top:0.5px solid var(--border)}
+.persona-body.hidden{display:none}
+.r2s{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-sm{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.field-sm label{font-size:11px;color:var(--text2);font-weight:600}
+.field-sm input,.field-sm select{height:40px;border:1.5px solid var(--border2);border-radius:var(--r);padding:0 10px;font-size:13px;color:var(--text);background:var(--surface);width:100%;-webkit-appearance:none;font-family:inherit}
+.field-sm input:focus,.field-sm select:focus{outline:none;border-color:var(--azul)}
+.foto-mini{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--azul)}
+.foto-placeholder-mini{width:50px;height:50px;border-radius:50%;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#0C447C;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar">
+  <div class="bios-logo"><span>GRUPO</span><span class="big">Bios</span></div>
+  <div class="topbar-info">
+    <h1>Solicitud de ingreso</h1>
+    <p>Completa el formulario para solicitar autorización</p>
+  </div>
+</div>
+
+<div class="mode-tabs">
+  <button class="mode-tab on" onclick="switchMode('individual',this)">Individual</button>
+  <button class="mode-tab" onclick="switchMode('masivo',this)">Ingreso masivo</button>
+  <button class="mode-tab" onclick="switchMode('carnet',this)">Mi carnet</button>
+</div>
+
+<!-- INDIVIDUAL -->
+<div id="pane-individual" class="pane on">
+  <div class="card">
+    <div class="sec">Foto para el carnet (opcional)</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Adjunta una foto de tu cédula de ciudadanía. La IA extraerá automáticamente tu foto para el carnet.</p>
+    <label class="upload-label">
+      <input type="file" id="fi-foto" accept="image/*,application/pdf,.pdf" capture="environment" onchange="hFoto(this)">
+      <div class="upload-ic">🪪</div>
+      <strong>Adjuntar foto de la cédula</strong>
+      <p>La IA extraerá tu rostro automáticamente</p>
+    </label>
+    <div id="foto-result"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Mis datos</div>
+    <div class="r2">
+      <div class="field"><label>Nombre completo *</label><input id="p-nom" placeholder="Juan López" oninput="cp()"></div>
+      <div class="field"><label>Cédula *</label><input id="p-doc" placeholder="71712503" oninput="cp();reprocesarPlanilla()"></div>
+    </div>
+    <div class="r2">
+      <div class="field"><label>Empresa *</label><input id="p-emp" placeholder="ABC Construcciones" oninput="cp()"></div>
+      <div class="field"><label>Área de ingreso *</label>
+        <select id="p-area" onchange="cp()">
+          <option value="">Seleccionar...</option>
+          <option>Producción</option><option>Mantenimiento</option>
+          <option>Bodega / Logística</option><option>Administración</option>
+          <option>Planta exterior</option><option>Cuarto frío</option>
+          <option>Eléctrico</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Sede que visita *</label>
+      <select id="p-sede" onchange="cp()">
+        <option value="">Seleccionar sede...</option>
+        <option>FRIKO-CALDAS</option><option>FRIKO-PEREIRA_PLANTA</option>
+        <option>FRIKO-BUCARAMANGA</option><option>FRIKO-PEREIRA_CEDI</option>
+        <option>FRIKO-TOCANCIPA_CEDI</option><option>FRIKO-BARRANQUILLA_RANSA</option>
+      </select>
+    </div>
+    <div class="r2">
+      <div class="field"><label>Correo *</label><input id="p-mail" type="email" placeholder="tu@correo.com" oninput="cp()"></div>
+      <div class="field"><label>Celular *</label><input id="p-tel" type="tel" placeholder="+57 300..." oninput="cp()"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Planilla PILA *</div>
+    <label class="upload-label">
+      <input type="file" id="fi-ss" accept="image/*,application/pdf,.pdf" onchange="hFiles(this)">
+      <div class="upload-ic">📄</div>
+      <strong>Adjuntar planilla PILA</strong>
+      <p>Foto o PDF · La IA validará automáticamente</p>
+    </label>
+    <div id="ia-result"></div>
+    <div id="val-result"></div>
+    <div id="semaforo-result"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Cursos y certificaciones</div>
+    <div class="curso-item curso-oblig">
+      <div><div class="curso-nombre">Inducción SST</div><div class="curso-sub">Obligatorio</div></div>
+      <div class="curso-toggle">
+        <button class="curso-btn" id="btn-sst-si" onclick="setCurso('sst','si')">Sí</button>
+        <button class="curso-btn" id="btn-sst-no" onclick="setCurso('sst','no')">No</button>
+      </div>
+    </div>
+    <div class="curso-item">
+      <div><div class="curso-nombre">Trabajo en alturas</div><div class="curso-sub">Si aplica</div></div>
+      <div class="curso-toggle">
+        <button class="curso-btn" id="btn-alt-si" onclick="setCurso('alt','si')">Aplica · Tengo cert.</button>
+        <button class="curso-btn" id="btn-alt-no" onclick="setCurso('alt','no')">No aplica</button>
+      </div>
+    </div>
+    <div class="curso-item">
+      <div><div class="curso-nombre">Espacios confinados</div><div class="curso-sub">Si aplica</div></div>
+      <div class="curso-toggle">
+        <button class="curso-btn" id="btn-conf-si" onclick="setCurso('conf','si')">Aplica · Tengo cert.</button>
+        <button class="curso-btn" id="btn-conf-no" onclick="setCurso('conf','no')">No aplica</button>
+      </div>
+    </div>
+    <div class="curso-item">
+      <div><div class="curso-nombre">Curso específico</div><div class="curso-sub">Si aplica</div></div>
+      <div class="curso-toggle">
+        <button class="curso-btn" id="btn-esp-si" onclick="setCurso('esp','si')">Aplica · Tengo cert.</button>
+        <button class="curso-btn" id="btn-esp-no" onclick="setCurso('esp','no')">No aplica</button>
+      </div>
+    </div>
+    <label class="upload-label" style="margin-top:10px">
+      <input type="file" id="fi-cert" accept="image/*,application/pdf,.pdf" multiple onchange="hCert(this)">
+      <div class="upload-ic">🎓</div>
+      <strong>Adjuntar certificados (si aplica)</strong>
+      <p>Foto o PDF</p>
+    </label>
+    <div id="fl-cert"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Observaciones</div>
+    <div class="field"><textarea id="p-obs" placeholder="Trabajo a realizar, duración estimada..."></textarea></div>
+  </div>
+
+  <div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  <p class="prog-lbl" id="prog-lbl">Completa los campos requeridos</p>
+  <button class="btn" id="btn-env" disabled onclick="enviar()">Enviar solicitud de ingreso</button>
+  <div id="prov-msg" style="margin:10px 12px 0"></div>
+</div>
+
+<!-- MI CARNET -->
+<div id="pane-carnet" class="pane">
+  <div class="card">
+    <div class="sec">Consultar mi carnet</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Ingresa el código de autorización que te fue asignado para ver tu carnet y código QR.</p>
+    <div class="field"><label>Código de autorización *</label>
+      <input id="cod-carnet" placeholder="Ej: MR2630-1358-001" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+    </div>
+    <button onclick="buscarCarnet()" style="width:100%;height:46px;border:none;background:var(--azul);color:white;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit">Consultar carnet</button>
+    <div id="carnet-result" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- MASIVO -->
+<div id="pane-masivo" class="pane">
+  <div class="card">
+    <div class="sec">Paso 1 · Planilla consolidada de la empresa</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Sube la planilla con todos los colaboradores. El sistema detectará automáticamente a cada persona.</p>
+    <div class="r2" style="margin-bottom:10px">
+      <div class="field"><label>Empresa *</label><input id="m-emp" placeholder="ABC Construcciones" oninput="checkMasivo()"></div>
+      <div class="field"><label>Sede que visita *</label>
+        <select id="m-sede" onchange="checkMasivo()">
+          <option value="">Seleccionar...</option>
+          <option>FRIKO-CALDAS</option><option>FRIKO-PEREIRA_PLANTA</option>
+          <option>FRIKO-BUCARAMANGA</option><option>FRIKO-PEREIRA_CEDI</option>
+          <option>FRIKO-TOCANCIPA_CEDI</option><option>FRIKO-BARRANQUILLA_RANSA</option>
+        </select>
+      </div>
+    </div>
+    <label class="upload-label">
+      <input type="file" id="fi-masivo" accept="image/*,application/pdf,.pdf" onchange="hMasivo(this)">
+      <div class="upload-ic">📋</div>
+      <strong>Adjuntar planilla consolidada</strong>
+      <p>La IA detectará todos los colaboradores</p>
+    </label>
+    <div id="masivo-ia"></div>
+  </div>
+
+  <div id="masivo-personas"></div>
+
+  <div id="masivo-actions" style="display:none">
+    <div class="prog-bar"><div class="prog-fill" id="prog-m" style="width:0%"></div></div>
+    <p class="prog-lbl" id="prog-m-lbl">Selecciona al menos un colaborador</p>
+    <button class="btn" id="btn-masivo" disabled onclick="enviarMasivo()">Enviar solicitudes</button>
+    <div id="masivo-msg" style="margin:10px 12px 0"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+var WORKER='https://throbbing-mouse-e218contratistas-api.giovannycardonaq.workers.dev';
+var API='https://throbbing-mouse-e218contratistas-api.giovannycardonaq.workers.dev/api';
+var CURSOS={sst:null,alt:null,conf:null,esp:null};
+var FOTO_B64=null,FOTO_OK=false;
+var PERSONAS_MASIVO=[];
+
+var FESTIVOS=['2025-01-01','2025-01-06','2025-03-24','2025-04-17','2025-04-18','2025-05-01','2025-06-02','2025-06-23','2025-06-30','2025-07-20','2025-08-07','2025-08-18','2025-10-13','2025-11-03','2025-11-17','2025-12-08','2025-12-25','2026-01-01','2026-01-12','2026-03-23','2026-04-02','2026-04-03','2026-05-01','2026-05-18','2026-06-08','2026-06-15','2026-07-20','2026-08-07','2026-08-17','2026-10-12','2026-11-02','2026-11-16','2026-12-08','2026-12-25'];
+var NIT_TABLE=[{min:0,max:7,dia:2},{min:8,max:14,dia:3},{min:15,max:21,dia:4},{min:22,max:28,dia:5},{min:29,max:35,dia:6},{min:36,max:42,dia:7},{min:43,max:49,dia:8},{min:50,max:56,dia:9},{min:57,max:63,dia:10},{min:64,max:69,dia:11},{min:70,max:75,dia:12},{min:76,max:81,dia:13},{min:82,max:87,dia:14},{min:88,max:93,dia:15},{min:94,max:99,dia:16}];
+
+function esFestivo(d){return FESTIVOS.indexOf(d.toISOString().slice(0,10))>-1;}
+function esDiaHabil(d){var day=d.getDay();return day!==0&&day!==6&&!esFestivo(d);}
+function getDiaHabilN(year,month,n){var count=0;var d=new Date(year,month,1);while(count<n){if(esDiaHabil(d))count++;if(count<n)d=new Date(d.getTime()+86400000);}return d;}
+function getDiaHabilLimite(nit,periodo){
+  var year=parseInt(periodo.slice(0,4)),month=parseInt(periodo.slice(4,6))-1;
+  var nm=month+1,ny=year;if(nm>11){nm=0;ny++;}
+  var u2=parseInt(nit.toString().replace(/[^0-9]/g,'').slice(-2)),dh=2;
+  for(var i=0;i<NIT_TABLE.length;i++){if(u2>=NIT_TABLE[i].min&&u2<=NIT_TABLE[i].max){dh=NIT_TABLE[i].dia;break;}}
+  return getDiaHabilN(ny,nm,dh);
+}
+function countDiasHabiles(desde,hasta){
+  var count=0,d=new Date(desde.getTime()+86400000);
+  while(d<=hasta){if(esDiaHabil(d))count++;d=new Date(d.getTime()+86400000);}
+  return count;
+}
+
+function calcSemaforo(parsed){
+  if(!parsed||!parsed.nit_aportante||!parsed.periodo_servicio)return null;
+  try{
+    var hoy=new Date();hoy.setHours(0,0,0,0);
+    var limite=getDiaHabilLimite(parsed.nit_aportante,parsed.periodo_servicio);
+    var limStr=limite.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+    if(hoy<=limite){
+      var dh=countDiasHabiles(hoy,limite);
+      if(dh<=5)return{color:'amarillo',titulo:'PRÓXIMA A VENCER',sub:'Quedan '+dh+' día(s) hábil(es). Límite: '+limStr,dias:dh,fecha:limStr};
+      return{color:'verde',titulo:'VIGENTE',sub:'Límite de pago: '+limStr+' ('+dh+' días hábiles)',dias:dh,fecha:limStr};
+    }else{
+      if(parsed.fecha_pago){
+        var fp=new Date(parsed.fecha_pago+'T12:00:00');
+        var mismoMes=(fp.getFullYear()===limite.getFullYear()&&fp.getMonth()===limite.getMonth());
+        var mismaFecha=fp.toDateString()===limite.toDateString();
+        if((fp<=limite||mismaFecha)&&(mismoMes||mismaFecha)){
+          var py=parseInt(parsed.periodo_servicio.slice(0,4)),pm=parseInt(parsed.periodo_servicio.slice(4,6));
+          var nm2=pm+1>12?1:pm+1,ny2=pm+1>12?py+1:py;
+          var np=String(ny2)+String(nm2).padStart(2,'0');
+          var pl=getDiaHabilLimite(parsed.nit_aportante,np);
+          var ps=pl.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+          var dp=countDiasHabiles(hoy,pl);
+          if(hoy>pl)return{color:'rojo',titulo:'VENCIDA',sub:'Límite del próximo pago fue el '+ps,dias:0,fecha:ps};
+          if(dp<=5)return{color:'amarillo',titulo:'PRÓXIMA A VENCER',sub:'Próximo límite: '+ps+' ('+dp+' días hábiles)',dias:dp,fecha:ps};
+          return{color:'verde',titulo:'VIGENTE',sub:'Pagó a tiempo. Próximo límite: '+ps+' ('+dp+' días hábiles)',dias:dp,fecha:ps};
+        }else if(fp<=limite&&!mismoMes){
+          return{color:'rojo',titulo:'VENCIDA',sub:'Límite fue el '+limStr+'. Pago del mes anterior.',dias:0,fecha:limStr};
+        }
+      }
+      return{color:'rojo',titulo:'VENCIDA',sub:'Límite fue el '+limStr+'. Presente planilla actualizada.',dias:0,fecha:limStr};
+    }
+  }catch(e){return null;}
+}
+
+function validarPILA(datos,nombreReg){
+  var err=[],adv=[],ok=[];
+  if(!datos.estado_planilla||datos.estado_planilla.toUpperCase().indexOf('PAGAD')===-1){err.push('La planilla NO está en estado PAGADA/PAGADO');}else{ok.push('Planilla '+datos.estado_planilla);}
+  var hoy=new Date();
+  var mesAnt=hoy.getMonth()===0?(hoy.getFullYear()-1)*100+12:hoy.getFullYear()*100+hoy.getMonth();
+  if(datos.periodo_servicio){
+    var ps=parseInt(datos.periodo_servicio);
+    var mesAct=hoy.getFullYear()*100+(hoy.getMonth()+1);
+    if(ps===mesAnt){ok.push('Período de servicio correcto: '+datos.periodo_servicio);}
+    else if(ps===mesAct){adv.push('Período de servicio es el mes actual');}
+    else if(ps<mesAnt){err.push('Período desactualizado: '+datos.periodo_servicio);}
+  }else{err.push('No se detectó período de servicio');}
+  if(datos.tipo_persona&&datos.periodo_servicio){
+    if(!datos.periodo_cotizacion){adv.push('No se detectó período de cotización');}
+    else{
+      var pc=parseInt(datos.periodo_cotizacion),ps2=parseInt(datos.periodo_servicio),diff=ps2-pc;
+      if(datos.tipo_persona.toUpperCase().indexOf('JURIDICA')>-1||datos.tipo_persona.toUpperCase().indexOf('JURÍDICA')>-1){
+        if(diff===1||(pc%100===12&&ps2%100===1)){ok.push('Tipo jurídica: períodos correctos');}
+        else{err.push('Tipo jurídica: cotización ('+datos.periodo_cotizacion+') vs servicio ('+datos.periodo_servicio+')');}
+      }else{
+        if(diff===0){ok.push('Tipo natural: períodos correctos');}
+        else{err.push('Tipo natural: cotización ('+datos.periodo_cotizacion+') vs servicio ('+datos.periodo_servicio+')');}
+      }
+    }
+  }
+  if(datos.nit_aportante&&datos.periodo_servicio&&datos.fecha_pago){
+    try{
+      var lim=getDiaHabilLimite(datos.nit_aportante,datos.periodo_servicio);
+      var fp=new Date(datos.fecha_pago+'T12:00:00');
+      var ls=lim.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+      var mfv=fp.toDateString()===lim.toDateString();
+      if(fp<=lim||mfv){ok.push('Pago a tiempo. Límite: '+ls);}
+      else{err.push('Pago extemporáneo. Límite era '+ls);}
+    }catch(e){adv.push('No se pudo calcular fecha límite');}
+  }
+  if(datos.nombre_afiliado&&nombreReg){
+    var nd=datos.nombre_afiliado.toUpperCase().replace(/\s+/g,' ').trim();
+    var nr=nombreReg.toUpperCase().replace(/\s+/g,' ').trim();
+    var pd=nd.split(' '),pr=nr.split(' '),coin=0;
+    pd.forEach(function(p){if(p.length>2&&pr.indexOf(p)>-1)coin++;});
+    if(coin>=2){ok.push('Nombre coincide');}
+    else if(coin===1){adv.push('Nombre parcialmente coincide');}
+    else{err.push('Nombre NO coincide: "'+datos.nombre_afiliado+'" vs "'+nombreReg+'"');}
+  }
+  return{errores:err,advertencias:adv,ok:ok};
+}
+
+function getKey(){return localStorage.getItem('anthropic_key')||'';}
+
+function buscarCarnet(){
+  var cod=document.getElementById('cod-carnet').value.trim();
+  if(!cod){alert('Ingresa el código de autorización.');return;}
+  var div=document.getElementById('carnet-result');
+  div.innerHTML='<div class="ia-box"><div class="ia-loading"><div class="spinner"></div><br>Buscando...</div></div>';
+  var xhr=new XMLHttpRequest();
+  xhr.open('GET',API+'/solicitudes',true);
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState!==4)return;
+    if(xhr.status!==200){div.innerHTML='<div class="alert a-err">Error de conexión.</div>';return;}
+    var data;
+    try{data=JSON.parse(xhr.responseText);}catch(e){div.innerHTML='<div class="alert a-err">Error al leer datos.</div>';return;}
+    var sol=data.find(function(s){return s.codigo&&s.codigo.toUpperCase()===cod.toUpperCase();});
+    if(!sol){div.innerHTML='<div class="alert a-err">Código no encontrado. Verifica que sea correcto.</div>';return;}
+    if(sol.estado!=='aprobado'){div.innerHTML='<div class="alert a-warn">Tu solicitud aún está en revisión.</div>';return;}
+    // Show carnet
+    var vigDate=sol.fechaVigencia?new Date(sol.fechaVigencia):null;
+    var vigStr=vigDate?vigDate.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'}):'';
+    var hoy=new Date();hoy.setHours(0,0,0,0);
+    var vigente=vigDate&&vigDate>=hoy;
+    var color=vigente?'#3B6D11':'#A32D2D';
+    var pd=sol.pilaData||{};
+    div.innerHTML='<div class="card" style="margin:0;padding:16px">'+
+      '<div style="text-align:center;margin-bottom:12px">'+
+        (sol.foto?'<img src="'+sol.foto+'" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid '+color+';display:block;margin:0 auto 8px">':
+        '<div style="width:80px;height:80px;border-radius:50%;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#0C447C;margin:0 auto 8px">'+sol.nom.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('')+'</div>')+
+        '<div style="font-weight:700;font-size:16px">'+sol.nom+'</div>'+
+        '<div style="font-size:13px;color:#6B6A65">'+sol.emp+'</div>'+
+        '<span style="display:inline-block;margin-top:6px;padding:3px 12px;border-radius:10px;font-size:12px;font-weight:600;background:'+(vigente?'#EAF3DE':'#FCEBEB')+';color:'+(vigente?'#27500A':'#791F1F')+'">'+( vigente?'AUTORIZADO':'VENCIDO')+'</span>'+
+      '</div>'+
+      '<div style="border-top:0.5px solid #E0DED6;padding-top:12px">'+
+        '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px"><span style="color:#6B6A65">Sede</span><span style="font-weight:600">'+(sol.sede||'—')+'</span></div>'+
+        '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px"><span style="color:#6B6A65">Área</span><span style="font-weight:600">'+sol.area+'</span></div>'+
+        '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px"><span style="color:#6B6A65">ARL</span><span style="font-weight:600">'+(pd.arl_nombre||'—')+'</span></div>'+
+        '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px"><span style="color:#6B6A65">Válido hasta</span><span style="font-weight:600;color:'+color+'">'+vigStr+'</span></div>'+
+        '<div style="text-align:center;margin-top:12px;padding:10px;background:#F5F4F0;border-radius:8px">'+
+          '<div style="font-size:10px;font-weight:700;color:#6B6A65;letter-spacing:.06em;margin-bottom:4px">CÓDIGO DE AUTORIZACIÓN</div>'+
+          '<div style="font-size:16px;font-weight:700;color:#185FA5;font-family:monospace">'+sol.codigo+'</div>'+
+        '</div>'+
+        '<div id="qr-prov" style="display:flex;justify-content:center;margin-top:12px"></div>'+
+      '</div>'+
+    '</div>';
+    // Generate QR
+    var verUrl='https://giovannycardona-hub.github.io/CONTRATISTAS/proveedor.html?ver='+encodeURIComponent(sol.codigo)+'&nom='+encodeURIComponent(sol.nom)+'&emp='+encodeURIComponent(sol.emp)+'&sede='+encodeURIComponent(sol.sede||'')+'&hasta='+encodeURIComponent(vigStr)+'&arl='+encodeURIComponent(pd.arl_nombre||'')+'&dias='+(sol.diasAutorizados||1);
+    var script=document.createElement('script');
+    script.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    script.onload=function(){
+      var qrDiv=document.getElementById('qr-prov');
+      if(qrDiv)new QRCode(qrDiv,{text:verUrl,width:180,height:180});
+    };
+    document.head.appendChild(script);
+  };
+  xhr.send();
+}
+
+function switchMode(mode,btn){
+  document.querySelectorAll('.mode-tab').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');
+  document.getElementById('pane-'+mode).classList.add('on');
+}
+
+function setCurso(c,v){
+  CURSOS[c]=v;
+  var si=document.getElementById('btn-'+c+'-si'),no=document.getElementById('btn-'+c+'-no');
+  if(si)si.className='curso-btn'+(v==='si'?' sel-si':'');
+  if(no)no.className='curso-btn'+(v==='no'?' sel-no':'');
+  cp();
+}
+
+function toBase64(file){
+  return new Promise(function(res,rej){
+    var r=new FileReader();
+    r.onload=function(){res(r.result.split(',')[1]);};
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+}
+
+function hFoto(input){
+  var file=input.files[0];if(!file)return;
+  var key='';  // Worker uses its own API key
+  var res=document.getElementById('foto-result');
+  res.innerHTML='<div class="ia-box"><div class="ia-loading"><div class="spinner"></div><br>Extrayendo foto de la cédula...</div></div>';
+  toBase64(file).then(function(b64){
+    var mediaType=file.type.startsWith('image/')?file.type:'image/jpeg';
+    var isPDF=file.type==='application/pdf'||file.name.toLowerCase().indexOf('.pdf')>-1;
+    if(!key){
+      FOTO_B64='data:'+mediaType+';base64,'+b64;
+      FOTO_OK=true;
+      res.innerHTML='<img src="'+FOTO_B64+'" class="foto-preview"><div class="alert a-ok" style="margin-top:8px">Cédula cargada.</div>';
+      cp();return;
+    }
+    var msgContent;
+    if(isPDF){
+      msgContent=[
+        {type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
+        {type:'text',text:'Esta es una cédula de ciudadanía colombiana. Responde en JSON sin markdown: {"tiene_foto":true/false,"nombre_completo":null,"numero_cedula":null}. Si ves una foto de rostro en el documento indica tiene_foto=true.'}
+      ];
+    } else {
+      msgContent=[
+        {type:'image',source:{type:'base64',media_type:mediaType,data:b64}},
+        {type:'text',text:'Esta es una cédula de ciudadanía colombiana. Responde en JSON sin markdown: {"tiene_foto":true/false,"nombre_completo":null,"numero_cedula":null}. Si ves una foto de rostro en el documento indica tiene_foto=true.'}
+      ];
+    }
+    return fetch(WORKER,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({apiKey:key,model:'claude-opus-4-5',max_tokens:200,messages:[{role:'user',content:msgContent}]})
+    }).then(function(r){return r.json();}).then(function(data){
+      var res2=document.getElementById('foto-result');
+      if(data.error){
+        FOTO_B64='data:'+mediaType+';base64,'+b64;
+        FOTO_OK=true;
+        res2.innerHTML='<img src="'+FOTO_B64+'" class="foto-preview"><div class="alert a-warn" style="margin-top:8px">Cédula cargada.</div>';
+        cp();return;
+      }
+      var txt=data.content[0].text.trim().replace(/```json|```/g,'').trim();
+      var parsed;
+      try{parsed=JSON.parse(txt);}catch(e){var m=txt.match(/\{[\s\S]*\}/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
+      // Use the cedula image as the carnet photo
+      FOTO_B64='data:'+mediaType+';base64,'+b64;
+      FOTO_OK=true;
+      // Auto-fill nombre and cedula if empty
+      if(parsed&&parsed.nombre_completo&&!document.getElementById('p-nom').value.trim()){
+        document.getElementById('p-nom').value=parsed.nombre_completo;
+      }
+      if(parsed&&parsed.numero_cedula&&!document.getElementById('p-doc').value.trim()){
+        document.getElementById('p-doc').value=parsed.numero_cedula;
+        reprocesarPlanilla();
+      }
+      var msg=parsed&&parsed.tiene_foto?
+        '<div class="alert a-ok" style="margin-top:8px">Cédula procesada. Tu foto será usada en el carnet.</div>':
+        '<div class="alert a-warn" style="margin-top:8px">Cédula cargada. Asegúrate que la foto sea clara.</div>';
+      res2.innerHTML='<img src="'+FOTO_B64+'" class="foto-preview">'+msg;
+      cp();
+    });
+  }).catch(function(){
+    FOTO_OK=true;
+    document.getElementById('foto-result').innerHTML='<div class="alert a-warn" style="margin-top:8px">Cédula cargada.</div>';
+    cp();
+  });
+}
+
+function reprocesarPlanilla(){
+  if(!window._lastFile)return;
+  clearTimeout(window._reprocTimer);
+  window._reprocTimer=setTimeout(function(){
+    var ced=document.getElementById('p-doc').value.trim();
+    if(ced.length>=6)hFiles({files:[window._lastFile]});
+  },800);
+}
+
+function hFiles(input){
+  var file=input.files[0];if(!file)return;
+  window._lastFile=file;
+  var key='';  // Worker uses its own API key
+  var iaDiv=document.getElementById('ia-result');
+  document.getElementById('val-result').innerHTML='';
+  document.getElementById('semaforo-result').innerHTML='';
+  if(!key){iaDiv.innerHTML='<div class="alert a-warn">API Key no configurada.</div>';return;}
+  var isPDF=file.type==='application/pdf'||file.name.toLowerCase().indexOf('.pdf')>-1;
+  var isImg=file.type.indexOf('image/')===0;
+  if(!isPDF&&!isImg){iaDiv.innerHTML='<div class="alert a-warn">Solo imágenes o PDF.</div>';return;}
+  iaDiv.innerHTML='<div class="ia-box"><div class="ia-loading"><div class="spinner"></div><br>Analizando planilla...</div></div>';
+  toBase64(file).then(function(b64){
+    var ced=document.getElementById('p-doc').value.trim();
+    var prompt='Eres experto en seguridad social colombiana (SuAporte, Compensar/miplanilla u otros). '+(ced?'Busca SOLO la cedula '+ced+'. Si no aparece responde unicamente: CEDULA_NO_ENCONTRADA. Si aparece extrae sus datos. ':'')+'Devuelve JSON sin markdown: {"estado_planilla":null,"periodo_cotizacion":null,"periodo_servicio":null,"fecha_pago":null,"tipo_persona":null,"nit_aportante":null,"razon_social_aportante":null,"nombre_afiliado":null,"cedula_afiliado":null,"arl_nombre":null,"eps_nombre":null,"pension_fondo":null}. REGLAS: 1) estado_planilla=PAGADO si tiene fecha de pago aunque no lo diga, PENDIENTE si no. 2) tipo_persona: si el aportante tiene NI/NIT o la razon social incluye SAS/S.A.S/S.A/LTDA/SA/INC o es una empresa = JURIDICA. Si el aportante tiene CC/CE y es una persona natural independiente = NATURAL. 3) periodo_servicio=YYYYMM del periodo de salud mas reciente. 4) periodo_cotizacion=YYYYMM del periodo de pension. 5) fecha_pago=YYYY-MM-DD. 6) nit_aportante=solo digitos del NIT o cedula del aportante. 7) null si no existe el dato.';
+    var content;
+    if(isPDF){content=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:prompt}];}
+    else{content=[{type:'image',source:{type:'base64',media_type:file.type,data:b64}},{type:'text',text:prompt}];}
+    return fetch(WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:key,model:'claude-opus-4-5',max_tokens:600,messages:[{role:'user',content:content}]})});
+  }).then(function(r){return r.json();}).then(function(data){
+    if(data.error){iaDiv.innerHTML='<div class="alert a-err">Error: '+data.error.message+'</div>';return;}
+    var txt=data.content[0].text.trim().replace(/```json|```/g,'').trim();
+    if(txt==='CEDULA_NO_ENCONTRADA'){iaDiv.innerHTML='<div class="alert a-err">La cédula no aparece en esta planilla.</div>';window._pilaValida=false;cp();return;}
+    var parsed;
+    try{parsed=JSON.parse(txt);}catch(e){var m=txt.match(/\{[\s\S]*\}/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
+    if(!parsed){iaDiv.innerHTML='<div class="alert a-err">No se pudo interpretar el documento.</div>';return;}
+    if(parsed.nombre_afiliado&&!document.getElementById('p-nom').value.trim())document.getElementById('p-nom').value=parsed.nombre_afiliado;
+    if(parsed.cedula_afiliado&&!document.getElementById('p-doc').value.trim())document.getElementById('p-doc').value=parsed.cedula_afiliado;
+    var html='<div class="ia-box"><div class="ia-title">Datos extraídos</div>';
+    if(parsed.estado_planilla)html+='<div class="ia-row"><span class="ia-k">Estado</span><span class="ia-v '+(parsed.estado_planilla.indexOf('PAGAD')>-1?'ok':'err')+'">'+parsed.estado_planilla+'</span></div>';
+    if(parsed.razon_social_aportante)html+='<div class="ia-row"><span class="ia-k">Aportante</span><span class="ia-v">'+parsed.razon_social_aportante+'</span></div>';
+    if(parsed.nombre_afiliado)html+='<div class="ia-row"><span class="ia-k">Afiliado</span><span class="ia-v">'+parsed.nombre_afiliado+'</span></div>';
+    if(parsed.periodo_servicio)html+='<div class="ia-row"><span class="ia-k">Período servicio</span><span class="ia-v">'+parsed.periodo_servicio+'</span></div>';
+    if(parsed.fecha_pago)html+='<div class="ia-row"><span class="ia-k">Fecha pago</span><span class="ia-v">'+parsed.fecha_pago+'</span></div>';
+    if(parsed.arl_nombre)html+='<div class="ia-row"><span class="ia-k">ARL</span><span class="ia-v">'+parsed.arl_nombre+'</span></div>';
+    if(parsed.eps_nombre)html+='<div class="ia-row"><span class="ia-k">EPS</span><span class="ia-v">'+parsed.eps_nombre+'</span></div>';
+    html+='</div>';
+    iaDiv.innerHTML=html;
+    var nr=document.getElementById('p-nom').value.trim();
+    var res=validarPILA(parsed,nr);
+    var hasErr=res.errores.length>0,hasAdv=res.advertencias.length>0;
+    var cls=hasErr?'val-err':hasAdv?'val-warn':'val-ok';
+    var tit=hasErr?'PLANILLA NO VÁLIDA':hasAdv?'CON OBSERVACIONES':'PLANILLA VÁLIDA';
+    var vhtml='<div class="val-result '+cls+'"><div class="val-title">'+tit+'</div>';
+    res.errores.forEach(function(e){vhtml+='<div class="val-item"><span>✗</span><span>'+e+'</span></div>';});
+    res.advertencias.forEach(function(a){vhtml+='<div class="val-item"><span>⚠</span><span>'+a+'</span></div>';});
+    res.ok.forEach(function(o){vhtml+='<div class="val-item"><span>✓</span><span>'+o+'</span></div>';});
+    vhtml+='</div>';
+    document.getElementById('val-result').innerHTML=vhtml;
+    var sem=calcSemaforo(parsed);
+    if(sem){
+      var dc='sem-dot-'+(sem.color==='verde'?'v':sem.color==='amarillo'?'a':'r');
+      document.getElementById('semaforo-result').innerHTML='<div class="semaforo sem-'+sem.color+'"><div class="sem-dot '+dc+'"></div><div class="sem-texto"><div class="sem-titulo">'+sem.titulo+'</div><div class="sem-sub">'+sem.sub+'</div></div></div>';
+      window._semaforo=sem;
+    }
+    window._pilaValida=!hasErr;
+    window._pilaData=parsed;
+    cp();
+  }).catch(function(e){iaDiv.innerHTML='<div class="alert a-err">Error: '+e.message+'</div>';});
+}
+
+function hCert(input){
+  var fl=document.getElementById('fl-cert');
+  Array.from(input.files).forEach(function(f){
+    var d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg);border-radius:var(--r);font-size:12px;border:0.5px solid var(--border);margin-top:6px';
+    d.innerHTML='<span>'+f.name+'</span><span class="badge b-ok">OK</span>';
+    fl.appendChild(d);
+  });
+}
+
+function cp(){
+  var nom=document.getElementById('p-nom').value.trim();
+  var doc=document.getElementById('p-doc').value.trim();
+  var emp=document.getElementById('p-emp').value.trim();
+  var area=document.getElementById('p-area').value;
+  var sede=document.getElementById('p-sede').value;
+  var mail=document.getElementById('p-mail').value.trim();
+  var tel=document.getElementById('p-tel').value.trim();
+  var pilaOk=window._pilaValida===true;
+  var sstOk=CURSOS.sst==='si';
+  var fotoOk=FOTO_OK===true;
+  var checks=[!!nom,!!doc,!!emp,!!area,!!sede,!!mail,!!tel,!!pilaOk,!!sstOk];
+  var n=checks.filter(Boolean).length;
+  var pct=Math.round(n/checks.length*100);
+  document.getElementById('prog').style.width=pct+'%';
+  var falta=[];
+  if(!nom||!doc||!emp)falta.push('datos personales');
+  if(!area||!sede)falta.push('área y sede');
+  if(!mail||!tel)falta.push('correo y celular');
+  if(!pilaOk)falta.push('planilla PILA válida');
+  if(!sstOk)falta.push('inducción SST');
+  document.getElementById('prog-lbl').textContent=falta.length?'Faltan: '+falta.join(', '):'Listo para enviar';
+  document.getElementById('btn-env').disabled=pct<100;
+}
+
+function enviar(){
+  var nom=document.getElementById('p-nom').value.trim();
+  var doc=document.getElementById('p-doc').value.trim();
+  var emp=document.getElementById('p-emp').value.trim();
+  var area=document.getElementById('p-area').value;
+  var sede=document.getElementById('p-sede').value;
+  var mail=document.getElementById('p-mail').value.trim();
+  var tel=document.getElementById('p-tel').value.trim();
+  var obs=document.getElementById('p-obs').value;
+  var sol={id:'SOL-'+Date.now(),num:'#'+String(Date.now()).slice(-6),nom:nom,doc:doc,emp:emp,area:area,sede:sede,mail:mail,tel:tel,obs:obs,
+    cursos:JSON.parse(JSON.stringify(CURSOS)),pilaData:window._pilaData||{},
+    semaforo:window._semaforo,foto:FOTO_B64?FOTO_B64.slice(0,50000):null,ts:new Date(),estado:'pendiente'};
+  var xhrSend=new XMLHttpRequest();
+  xhrSend.open('POST', API+'/solicitud', true);
+  xhrSend.setRequestHeader('Content-Type','application/json');
+  xhrSend.onreadystatechange=function(){
+    if(xhrSend.readyState!==4)return;
+    if(xhrSend.status===200){
+      document.getElementById('pane-individual').innerHTML=
+        '<div class="exito-box"><div class="exito-ic">✅</div>'+
+        '<div class="exito-titulo">¡Solicitud '+sol.num+' enviada!</div>'+
+        '<div class="exito-sub">Solicitud '+sol.num+' recibida correctamente.<br>El equipo de Autorizaciones revisará tus documentos.<br><br>Puedes cerrar esta ventana.</div></div>';
+    } else {
+      document.getElementById('prov-msg').innerHTML='<div class="alert a-err" style="margin:10px 12px 0">Error '+xhrSend.status+'. Intenta de nuevo.</div>';
+    }
+  };
+  xhrSend.onerror=function(){document.getElementById('prov-msg').innerHTML='<div class="alert a-err" style="margin:10px 12px 0">Error de red. Intenta de nuevo.</div>';};
+  xhrSend.send(JSON.stringify(sol));
+}
+
+// ===== MASIVO =====
+function checkMasivo(){
+  var emp=document.getElementById('m-emp').value.trim();
+  var sede=document.getElementById('m-sede').value;
+  if(emp&&sede&&PERSONAS_MASIVO.length>0)renderPersonasMasivo();
+}
+
+function hMasivo(input){
+  var file=input.files[0];if(!file)return;
+  var key='';  // Worker uses its own API key
+  var iaDiv=document.getElementById('masivo-ia');
+  if(!key){iaDiv.innerHTML='<div class="alert a-warn" style="margin-top:10px">API Key no configurada.</div>';return;}
+  iaDiv.innerHTML='<div class="ia-box" style="margin-top:10px"><div class="ia-loading"><div class="spinner"></div><br>Detectando colaboradores en la planilla...</div></div>';
+  var isPDF=file.type==='application/pdf'||file.name.toLowerCase().indexOf('.pdf')>-1;
+  var isImg=file.type.indexOf('image/')===0;
+  toBase64(file).then(function(b64){
+    var prompt='Eres experto en planillas PILA colombianas. Analiza este documento y extrae TODOS los colaboradores/afiliados que aparecen. Devuelve JSON array sin markdown: [{"nombre":null,"cedula":null,"arl":null,"eps":null,"pension":null},...]. Extrae TODAS las personas que aparezcan en el documento. nombre en mayúsculas. cedula solo dígitos. Si solo hay una persona devuelve array de un elemento.';
+    var content;
+    if(isPDF){content=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:prompt}];}
+    else{content=[{type:'image',source:{type:'base64',media_type:file.type,data:b64}},{type:'text',text:prompt}];}
+    return fetch(WORKER,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({apiKey:key,model:'claude-opus-4-5',max_tokens:2000,messages:[{role:'user',content:content}]})
+    });
+  }).then(function(r){return r.json();}).then(function(data){
+    if(data.error){iaDiv.innerHTML='<div class="alert a-err">Error: '+data.error.message+'</div>';return;}
+    var txt=data.content[0].text.trim().replace(/```json|```/g,'').trim();
+    var parsed;
+    try{parsed=JSON.parse(txt);}catch(e){var m=txt.match(/\[[\s\S]*\]/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
+    if(!parsed||!Array.isArray(parsed)||!parsed.length){
+      iaDiv.innerHTML='<div class="alert a-err">No se detectaron colaboradores. Verifica el documento.</div>';return;}
+    PERSONAS_MASIVO=parsed.map(function(p,i){return{idx:i,nombre:p.nombre||'',cedula:p.cedula||'',arl:p.arl||'',eps:p.eps||'',pension:p.pension||'',seleccionado:false,mail:'',cel:'',area:'',foto:null,fotoOk:false};});
+    iaDiv.innerHTML='<div class="alert a-ok" style="margin-top:10px">Se detectaron <strong>'+PERSONAS_MASIVO.length+' colaboradores</strong>. Selecciona los que van a ingresar.</div>';
+    renderPersonasMasivo();
+    document.getElementById('masivo-actions').style.display='block';
+  }).catch(function(e){iaDiv.innerHTML='<div class="alert a-err">Error: '+e.message+'</div>';});
+}
+
+function renderPersonasMasivo(){
+  var container=document.getElementById('masivo-personas');
+  var sede=document.getElementById('m-sede').value;
+  var emp=document.getElementById('m-emp').value.trim();
+  container.innerHTML='<div class="card"><div class="sec">Paso 2 · Selecciona los colaboradores que ingresan</div>'+
+    PERSONAS_MASIVO.map(function(p){
+      var ini=p.nombre.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('');
+      return '<div class="persona-card" id="pc-'+p.idx+'">'+
+        '<div class="persona-header" onclick="togglePersona('+p.idx+')">'+
+          '<input type="checkbox" class="persona-check" id="chk-'+p.idx+'" onclick="event.stopPropagation();selPersona('+p.idx+',this.checked)" '+(p.seleccionado?'checked':'')+'>'+
+          '<div class="foto-placeholder-mini" id="mini-foto-'+p.idx+'">'+ini+'</div>'+
+          '<div style="flex:1;min-width:0">'+
+            '<div class="persona-nombre">'+p.nombre+'</div>'+
+            '<div class="persona-cedula">CC '+p.cedula+(p.arl?' · '+p.arl:'')+'</div>'+
+          '</div>'+
+          '<span style="color:var(--text2);font-size:12px">'+(p.seleccionado?'▲':'▼')+'</span>'+
+        '</div>'+
+        '<div class="persona-body '+(p.seleccionado?'':'hidden')+'" id="pb-'+p.idx+'">'+
+          '<label class="upload-label" style="margin-bottom:10px;padding:12px" onclick="triggerFotoMasivo('+p.idx+',event)">'+
+            '<input type="file" id="foto-m-'+p.idx+'" accept="image/*,application/pdf,.pdf" onchange="hFotoMasivo(this,'+p.idx+')">'+
+            '<div class="upload-ic" style="font-size:18px;margin-bottom:4px">🪪</div>'+
+            '<strong style="font-size:12px">Foto cédula (opcional)</strong>'+
+          '</label>'+
+          '<div class="r2s">'+
+            '<div class="field-sm"><label>Correo *</label><input type="email" id="mail-'+p.idx+'" placeholder="correo@..." oninput="updatePersona('+p.idx+')"></div>'+
+            '<div class="field-sm"><label>Celular *</label><input type="tel" id="cel-'+p.idx+'" placeholder="+57 300..." oninput="updatePersona('+p.idx+')"></div>'+
+          '</div>'+
+          '<div class="r2s">'+
+            '<div class="field-sm"><label>Área *</label>'+
+              '<select id="area-'+p.idx+'" onchange="updatePersona('+p.idx+')">'+
+                '<option value="">Seleccionar...</option>'+
+                '<option>Producción</option><option>Mantenimiento</option>'+
+                '<option>Bodega / Logística</option><option>Administración</option>'+
+                '<option>Planta exterior</option><option>Cuarto frío</option><option>Eléctrico</option>'+
+              '</select>'+
+            '</div>'+
+            '<div class="field-sm"><label>SST</label>'+
+              '<select id="sst-'+p.idx+'" onchange="updatePersona('+p.idx+')">'+
+                '<option value="">...</option><option value="si">Sí tiene</option><option value="no">No tiene</option>'+
+              '</select>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    }).join('')+'</div>';
+  updateProgMasivo();
+}
+
+function triggerFotoMasivo(idx,e){
+  e.stopPropagation();
+  document.getElementById('foto-m-'+idx).click();
+}
+
+function hFotoMasivo(input,idx){
+  var file=input.files[0];if(!file)return;
+  toBase64(file).then(function(b64){
+    var src='data:'+file.type+';base64,'+b64;
+    PERSONAS_MASIVO[idx].foto=src;
+    PERSONAS_MASIVO[idx].fotoOk=true;
+    var mini=document.getElementById('mini-foto-'+idx);
+    if(mini)mini.innerHTML='<img src="'+src+'" class="foto-mini">';
+    updatePersona(idx);
+  });
+}
+
+function togglePersona(idx){
+  var p=PERSONAS_MASIVO[idx];
+  p.seleccionado=!p.seleccionado;
+  var chk=document.getElementById('chk-'+idx);
+  if(chk)chk.checked=p.seleccionado;
+  var body=document.getElementById('pb-'+idx);
+  if(body)body.classList.toggle('hidden',!p.seleccionado);
+  updateProgMasivo();
+}
+
+function selPersona(idx,checked){
+  PERSONAS_MASIVO[idx].seleccionado=checked;
+  var body=document.getElementById('pb-'+idx);
+  if(body)body.classList.toggle('hidden',!checked);
+  updateProgMasivo();
+}
+
+function updatePersona(idx){
+  var p=PERSONAS_MASIVO[idx];
+  var mail=document.getElementById('mail-'+idx);
+  var cel=document.getElementById('cel-'+idx);
+  var area=document.getElementById('area-'+idx);
+  var sst=document.getElementById('sst-'+idx);
+  if(mail)p.mail=mail.value.trim();
+  if(cel)p.cel=cel.value.trim();
+  if(area)p.area=area.value;
+  if(sst)p.sst=sst.value;
+  updateProgMasivo();
+}
+
+function updateProgMasivo(){
+  var sel=PERSONAS_MASIVO.filter(function(p){return p.seleccionado;});
+  var completos=sel.filter(function(p){return p.mail&&p.cel&&p.area&&p.sst;});
+  var pct=sel.length?Math.round(completos.length/sel.length*100):0;
+  document.getElementById('prog-m').style.width=pct+'%';
+  var lbl=sel.length===0?'Selecciona al menos un colaborador':
+    completos.length===sel.length?'Listo para enviar ('+sel.length+' colaboradores)':
+    'Faltan datos en '+(sel.length-completos.length)+' colaborador(es)';
+  document.getElementById('prog-m-lbl').textContent=lbl;
+  document.getElementById('btn-masivo').disabled=!(sel.length>0&&completos.length===sel.length);
+}
+
+function enviarMasivo(){
+  var sel=PERSONAS_MASIVO.filter(function(p){return p.seleccionado;});
+  var emp=document.getElementById('m-emp').value.trim();
+  var sede=document.getElementById('m-sede').value;
+  var sols=JSON.parse(localStorage.getItem('solicitudes_pendientes')||'[]');
+  sel.forEach(function(p){
+    var sol={
+      id:'SOL-'+Date.now()+'-'+p.idx,
+      nom:p.nombre,doc:p.cedula,emp:emp,area:p.area,sede:sede,
+      mail:p.mail,tel:p.cel,obs:'Ingreso masivo',
+      cursos:{sst:p.sst,alt:'no',conf:'no',esp:'no'},
+      pilaData:{arl_nombre:p.arl,eps_nombre:p.eps,pension_fondo:p.pension},
+      foto:p.foto,ts:new Date(),estado:'pendiente',alertas:[]
+    };
+    sols.push(sol);
+  });
+  var promises=sols.map(function(s){
+    return fetch(API+'/solicitud',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(s)});
+  });
+  Promise.all(promises).then(function(){
+    document.getElementById('pane-masivo').innerHTML=
+      '<div class="exito-box"><div class="exito-ic">✅</div>'+
+      '<div class="exito-titulo">'+sel.length+' solicitudes enviadas</div>'+
+      '<div class="exito-sub">Todas las solicitudes fueron recibidas.<br>Autorizaciones revisará cada caso y notificará por correo.<br><br>Puedes cerrar esta ventana.</div></div>';
+  }).catch(function(){
+    document.getElementById('masivo-msg').innerHTML='<div class="alert a-err">Error de conexión. Intenta de nuevo.</div>';
+  });
+}
+
+window.onload=function(){
+  window._pilaValida=false;window._pilaData=null;window._semaforo=null;FOTO_OK=true;
+};
+</script>
+</body>
+</html>
