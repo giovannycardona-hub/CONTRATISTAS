@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Solicitud de Ingreso - Grupo Bios</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--azul:#185FA5;--bg:#F5F4F0;--surface:#FFFFFF;--border:#E0DED6;--border2:#C5C3BB;--text:#1A1918;--text2:#6B6A65;--r:8px;--rl:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--text);background:var(--bg);min-height:100vh;-webkit-font-smoothing:antialiased}
+.app{max-width:480px;margin:0 auto;padding-bottom:40px}
+.topbar{background:var(--azul);padding:14px 16px;display:flex;align-items:center;gap:10px}
+.bios-logo{background:white;border-radius:6px;padding:4px 8px;display:flex;align-items:center;flex-shrink:0}
+.bios-logo span{color:#2d7a3a;font-weight:800;font-size:14px}
+.bios-logo span.big{font-size:17px}
+.topbar-info h1{font-size:15px;font-weight:600;color:white;line-height:1.2}
+.topbar-info p{font-size:11px;color:rgba(255,255,255,.72)}
+.mode-tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border)}
+.mode-tab{flex:1;padding:14px;border:none;background:transparent;font-size:13px;color:var(--text2);border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;font-weight:500}
+.mode-tab.on{color:var(--azul);border-bottom-color:var(--azul);font-weight:600}
+.pane{display:none;padding:12px}
+.pane.on{display:block}
+.card{background:var(--surface);border-radius:var(--rl);border:0.5px solid var(--border);padding:16px;margin-bottom:12px}
+.sec{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.field label{font-size:12px;color:var(--text2);font-weight:600}
+.field input,.field select,.field textarea{height:46px;border:1.5px solid var(--border2);border-radius:var(--r);padding:0 12px;font-size:15px;color:var(--text);background:var(--surface);width:100%;-webkit-appearance:none;font-family:inherit}
+.field input:focus,.field select:focus{outline:none;border-color:var(--azul)}
+.field textarea{height:76px;padding:10px 12px;resize:none}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.upload-label{display:block;border:2px dashed var(--border2);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;margin-bottom:0}
+.upload-label input{display:none}
+.upload-ic{font-size:28px;margin-bottom:6px}
+.upload-label strong{display:block;font-size:14px;color:var(--azul);font-weight:600;margin-bottom:3px}
+.upload-label p{font-size:12px;color:var(--text2)}
+.foto-preview{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--azul);display:block;margin:10px auto 0}
+.curso-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;background:var(--surface)}
+.curso-nombre{font-size:13px;font-weight:600}
+.curso-sub{font-size:11px;color:var(--text2);margin-top:2px}
+.curso-toggle{display:flex;gap:6px}
+.curso-btn{height:30px;padding:0 10px;border-radius:var(--r);font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--text2)}
+.curso-btn.sel-si{background:#EAF3DE;border-color:#3B6D11;color:#27500A}
+.curso-btn.sel-no{background:#FCEBEB;border-color:#A32D2D;color:#791F1F}
+.curso-oblig{background:#E6F1FB;border-color:#185FA5}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:600}
+.b-ok{background:#EAF3DE;color:#27500A}
+.b-err{background:#FCEBEB;color:#791F1F}
+.b-warn{background:#FAEEDA;color:#633806}
+.b-info{background:#E6F1FB;color:#0C447C}
+.prog-bar{height:6px;background:var(--border);border-radius:3px;margin:16px 12px 4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;background:var(--azul);transition:width .3s}
+.prog-lbl{font-size:12px;color:var(--text2);margin:0 12px 12px}
+.btn{width:calc(100% - 24px);margin:0 12px;height:50px;border-radius:var(--r);border:none;background:var(--azul);color:white;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;display:block}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.alert{border-radius:var(--r);padding:12px 14px;font-size:13px;margin-top:10px;line-height:1.5}
+.a-ok{background:#EAF3DE;color:#27500A;border:1px solid #97C459}
+.a-err{background:#FCEBEB;color:#791F1F;border:1px solid #F09595}
+.a-warn{background:#FAEEDA;color:#633806;border:1px solid #EF9F27}
+.ia-box{background:var(--bg);border-radius:var(--r);padding:12px;margin-top:10px;border:0.5px solid var(--border)}
+.ia-title{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.ia-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--border);gap:8px}
+.ia-row:last-child{border-bottom:none}
+.ia-k{font-size:12px;color:var(--text2);flex-shrink:0}
+.ia-v{font-size:12px;font-weight:600;text-align:right}
+.ia-v.ok{color:#3B6D11}
+.ia-v.err{color:#791F1F}
+.ia-loading{text-align:center;padding:16px;color:var(--text2);font-size:13px}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--azul);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.semaforo{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r);margin-top:10px;border:2px solid}
+.sem-verde{background:#EAF3DE;border-color:#3B6D11}
+.sem-amarillo{background:#FAEEDA;border-color:#854F0B}
+.sem-rojo{background:#FCEBEB;border-color:#A32D2D}
+.sem-dot{width:18px;height:18px;border-radius:50%;flex-shrink:0}
+.sem-dot-v{background:#639922}
+.sem-dot-a{background:#EF9F27}
+.sem-dot-r{background:#E24B4A}
+.sem-texto{flex:1}
+.sem-titulo{font-size:13px;font-weight:700}
+.sem-sub{font-size:12px;margin-top:2px}
+.val-result{border-radius:var(--r);padding:14px;margin-top:10px;border:2px solid}
+.val-ok{background:#EAF3DE;border-color:#3B6D11}
+.val-err{background:#FCEBEB;border-color:#A32D2D}
+.val-warn{background:#FAEEDA;border-color:#854F0B}
+.val-title{font-size:13px;font-weight:700;margin-bottom:8px}
+.val-item{font-size:12px;padding:3px 0;display:flex;align-items:flex-start;gap:6px}
+.exito-box{text-align:center;padding:40px 20px}
+.exito-ic{font-size:64px;margin-bottom:16px}
+.exito-titulo{font-size:22px;font-weight:700;color:#3B6D11;margin-bottom:8px}
+.exito-sub{font-size:14px;color:var(--text2);line-height:1.6}
+/* Masivo */
+.persona-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:12px;overflow:hidden}
+.persona-header{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg);cursor:pointer}
+.persona-check{width:22px;height:22px;flex-shrink:0;accent-color:var(--azul)}
+.persona-nombre{font-weight:600;font-size:14px;flex:1}
+.persona-cedula{font-size:12px;color:var(--text2)}
+.persona-body{padding:14px;border-top:0.5px solid var(--border)}
+.persona-body.hidden{display:none}
+.r2s{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-sm{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.field-sm label{font-size:11px;color:var(--text2);font-weight:600}
+.field-sm input,.field-sm select{height:40px;border:1.5px solid var(--border2);border-radius:var(--r);padding:0 10px;font-size:13px;color:var(--text);background:var(--surface);width:100%;-webkit-appearance:none;font-family:inherit}
+.field-sm input:focus,.field-sm select:focus{outline:none;border-color:var(--azul)}
+.foto-mini{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--azul)}
+.foto-placeholder-mini{width:50px;height:50px;border-radius:50%;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#0C447C;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar">
+  <div class="bios-logo"><span>GRUPO</span><span class="big">Bios</span></div>
+  <div class="topbar-info">
+    <h1>Solicitud de ingreso</h1>
+    <p>Completa el formulario para solicitar autorización</p>
+  </div>
+</div>
+
+<div class="mode-tabs">
+  <button class="mode-tab on" onclick="switchMode('individual',this)">Individual</button>
+  <button class="mode-tab" onclick="switchMode('masivo',this)">Ingreso masivo</button>
+  <button class="mode-tab" onclick="switchMode('carnet',this)">Mi carnet</button>
+</div>
+
+<!-- INDIVIDUAL -->
+<div id="pane-individual" class="pane on">
+  <div class="card">
+    <div class="sec">Foto para el carnet (opcional)</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Adjunta una foto de tu cédula de ciudadanía. La IA extraerá automáticamente tu foto para el carnet.</p>
+    <label class="upload-label">
+      <input type="file" id="fi-foto" accept="image/*,application/pdf,.pdf" capture="environment" onchange="hFoto(this)">
+      <div class="upload-ic">🪪</div>
+      <strong>Adjuntar foto de la cédula</strong>
+      <p>La IA extraerá tu rostro automáticamente</p>
+    </label>
+    <div id="foto-result"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Mis datos</div>
+    <div class="r2">
+      <div class="field"><label>Nombre completo *</label><input id="p-nom" placeholder="Juan López" oninput="cp()"></div>
+      <div class="field"><label>Cédula *</label><input id="p-doc" placeholder="71712503" oninput="cp();reprocesarPlanilla()"></div>
+    </div>
+    <div class="r2">
+      <div class="field"><label>Empresa *</label><input id="p-emp" placeholder="ABC Construcciones" oninput="cp()"></div>
+      <div class="field"><label>Área de ingreso *</label>
+        <select id="p-area" onchange="cp()">
+          <option value="">Seleccionar...</option>
+          <option>Producción</option><option>Mantenimiento</option>
+          <option>Bodega / Logística</option><option>Administración</option>
+          <option>Planta exterior</option><option>Cuarto frío</option>
+          <option>Eléctrico</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Sede que visita *</label>
+      <select id="p-sede" onchange="cp()">
+        <option value="">Seleccionar sede...</option>
+        <option>FRIKO-CALDAS</option><option>FRIKO-PEREIRA_PLANTA</option>
+        <option>FRIKO-BUCARAMANGA</option><option>FRIKO-PEREIRA_CEDI</option>
+        <option>FRIKO-TOCANCIPA_CEDI</option><option>FRIKO-BARRANQUILLA_RANSA</option>
+      </select>
+    </div>
+    <div class="r2">
+      <div class="field"><label>Correo *</label><input id="p-mail" type="email" placeholder="tu@correo.com" oninput="cp()"></div>
+      <div class="field"><label>Celular *</label><input id="p-tel" type="tel" placeholder="+57 300..." oninput="cp()"></div>
+    </div>
+  </div>
+
+  <div class="card" style="border:2px solid #185FA5">
+    <div class="sec" style="color:#0C447C">Manual de Seguridad y Salud en el Trabajo</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Antes de continuar debes leer el Manual SST-GI-CT-MA1-001 de Grupo Bios. Es obligatorio y parte del proceso de autorización.</p>
+    <button id="btn-abrir-manual" onclick="abrirManual()" style="width:100%;height:46px;border:none;background:#185FA5;color:white;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:10px">📖 Abrir Manual de Contratistas</button>
+    <div id="manual-tiempo" style="display:none;font-size:12px;color:#6B6A65;margin-bottom:10px;text-align:center"></div>
+    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:10px;background:#E6F1FB;border-radius:var(--r)">
+      <input type="checkbox" id="chk-manual" onchange="checkManual()" style="margin-top:2px;width:18px;height:18px;flex-shrink:0;accent-color:var(--azul)" disabled>
+      <span style="font-size:13px;line-height:1.4">Confirmo que <strong>leí y entendí</strong> el Manual de Seguridad y Salud en el Trabajo para Contratistas, Subcontratistas, Proveedores y Visitantes (SST-GI-CT-MA1-001 V08)</span>
+    </label>
+    <div id="manual-result" style="margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Planilla PILA *</div>
+    <label class="upload-label">
+      <input type="file" id="fi-ss" accept="image/*,application/pdf,.pdf" onchange="hFiles(this)">
+      <div class="upload-ic">📄</div>
+      <strong>Adjuntar planilla PILA</strong>
+      <p>Foto o PDF · La IA validará automáticamente</p>
+    </label>
+    <div id="ia-result"></div>
+    <div id="val-result"></div>
+    <div id="semaforo-result"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Cursos y certificaciones</div>
+    <div class="curso-item curso-oblig">
+      <div><div class="curso-nombre">Inducción SST</div><div class="curso-sub">Obligatorio</div></div>
+      <div class="curso-toggle">
+        <button class="curso-btn" id="btn-sst-si" onclick="setCurso('sst','si')">Sí</button>
+        <button class="curso-btn" id="btn-sst-no" onclick="setCurso('sst','no')">No</button>
+      </div>
+    </div>
+    <div class="curso-item">
+      <div><div class="curso-nombre">Trabajo en alturas</div><div class="curso-sub">Si aplica</div></div>
+      <div class="curso-toggle">
+        <button class="curso-btn" id="btn-alt-si" onclick="setCurso('alt','si')">Aplica · Tengo cert.</button>
+        <button class="curso-btn" id="btn-alt-no" onclick="setCurso('alt','no')">No aplica</button>
+      </div>
+    </div>
+    <div class="curso-item">
+      <div><div class="curso-nombre">Espacios confinados</div><div class="curso-sub">Si aplica</div></div>
+      <div class="curso-toggle">
+        <button class="curso-btn" id="btn-conf-si" onclick="setCurso('conf','si')">Aplica · Tengo cert.</button>
+        <button class="curso-btn" id="btn-conf-no" onclick="setCurso('conf','no')">No aplica</button>
+      </div>
+    </div>
+    <div class="curso-item">
+      <div><div class="curso-nombre">Curso específico</div><div class="curso-sub">Si aplica</div></div>
+      <div class="curso-toggle">
+        <button class="curso-btn" id="btn-esp-si" onclick="setCurso('esp','si')">Aplica · Tengo cert.</button>
+        <button class="curso-btn" id="btn-esp-no" onclick="setCurso('esp','no')">No aplica</button>
+      </div>
+    </div>
+    <label class="upload-label" style="margin-top:10px">
+      <input type="file" id="fi-cert" accept="image/*,application/pdf,.pdf" multiple onchange="hCert(this)">
+      <div class="upload-ic">🎓</div>
+      <strong>Adjuntar certificados (si aplica)</strong>
+      <p>Foto o PDF</p>
+    </label>
+    <div id="fl-cert"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Tipo de contratista</div>
+    <div style="display:flex;gap:10px;margin-bottom:12px">
+      <button id="btn-tipo-directo" onclick="setTipo('directo')" class="curso-btn sel-si" style="flex:1;height:40px">Contratista directo</button>
+      <button id="btn-tipo-sub" onclick="setTipo('sub')" class="curso-btn" style="flex:1;height:40px">Subcontratista</button>
+    </div>
+    <div id="sub-fields" style="display:none">
+      <div class="field"><label>Empresa contratista principal *</label><input id="p-emp-principal" placeholder="Empresa que lo subcontrata" oninput="cp()"></div>
+      <label class="upload-label" style="margin-bottom:0">
+        <input type="file" id="fi-carta-sub" accept="image/*,application/pdf,.pdf" onchange="hCartaSub(this)">
+        <div class="upload-ic" style="font-size:20px;margin-bottom:4px">📋</div>
+        <strong style="font-size:13px">Carta relación comercial (opcional)</strong>
+        <p style="font-size:11px">Carta entre empresa contratista y subcontratista</p>
+      </label>
+      <div id="carta-sub-result"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Observaciones</div>
+    <div class="field"><textarea id="p-obs" placeholder="Trabajo a realizar, duración estimada..."></textarea></div>
+  </div>
+
+  <div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  <p class="prog-lbl" id="prog-lbl">Completa los campos requeridos</p>
+  <button class="btn" id="btn-env" disabled onclick="enviar()">Enviar solicitud de ingreso</button>
+  <div id="prov-msg" style="margin:10px 12px 0"></div>
+</div>
+
+<!-- MI CARNET -->
+<div id="pane-carnet" class="pane">
+  <div class="card">
+    <div class="sec">Consultar mi carnet</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Ingresa el código de autorización que te fue asignado para ver tu carnet y código QR.</p>
+    <div class="field"><label>Código de autorización *</label>
+      <input id="cod-carnet" placeholder="Ej: MR2630-1358-001" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+    </div>
+    <button onclick="buscarCarnet()" style="width:100%;height:46px;border:none;background:var(--azul);color:white;border-radius:var(--r);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit">Consultar carnet</button>
+    <div id="carnet-result" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- MASIVO -->
+<div id="pane-masivo" class="pane">
+  <div class="card">
+    <div class="sec">Paso 1 · Planilla consolidada de la empresa</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Sube la planilla con todos los trabajadores. El sistema detectará automáticamente a cada persona.</p>
+    <div class="r2" style="margin-bottom:10px">
+      <div class="field"><label>Empresa *</label><input id="m-emp" placeholder="ABC Construcciones" oninput="checkMasivo()"></div>
+      <div class="field"><label>Sede que visita *</label>
+        <select id="m-sede" onchange="checkMasivo()">
+          <option value="">Seleccionar...</option>
+          <option>FRIKO-CALDAS</option><option>FRIKO-PEREIRA_PLANTA</option>
+          <option>FRIKO-BUCARAMANGA</option><option>FRIKO-PEREIRA_CEDI</option>
+          <option>FRIKO-TOCANCIPA_CEDI</option><option>FRIKO-BARRANQUILLA_RANSA</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Correo empresa (para notificación) *</label><input id="m-correo" type="email" placeholder="empresa@correo.com" oninput="checkMasivo()"></div>
+    <div style="background:#E6F1FB;border-radius:var(--r);padding:14px;margin-bottom:12px;border:1.5px solid #185FA5">
+      <div style="font-size:11px;font-weight:700;color:#0C447C;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Manual SST Obligatorio</div>
+      <p style="font-size:12px;color:#185FA5;margin-bottom:10px;line-height:1.4">Todos los trabajadores deben conocer el Manual de Seguridad y Salud en el Trabajo de Grupo Bios.</p>
+      <button id="btn-manual-masivo" onclick="abrirManualMasivo()" style="width:100%;height:40px;border:none;background:#185FA5;color:white;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:8px">📖 Abrir Manual de Contratistas</button>
+      <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+        <input type="checkbox" id="chk-manual-masivo" onchange="checkManualMasivo()" style="margin-top:2px;width:16px;height:16px;flex-shrink:0;accent-color:var(--azul)" disabled>
+        <span style="font-size:12px;line-height:1.4">Confirmo que todos los trabajadores han sido informados del manual SST-GI-CT-MA1-001 V08</span>
+      </label>
+    </div>
+    <label class="upload-label">
+      <input type="file" id="fi-masivo" accept="image/*,application/pdf,.pdf" onchange="hMasivo(this)">
+      <div class="upload-ic">📋</div>
+      <strong>Adjuntar planilla consolidada</strong>
+      <p>La IA detectará todos los trabajadores</p>
+    </label>
+    <div id="masivo-ia"></div>
+  </div>
+
+  <div id="masivo-personas"></div>
+
+  <div id="masivo-actions" style="display:none">
+    <div class="prog-bar"><div class="prog-fill" id="prog-m" style="width:0%"></div></div>
+    <p class="prog-lbl" id="prog-m-lbl">Selecciona al menos un colaborador</p>
+    <button class="btn" id="btn-masivo" disabled onclick="enviarMasivo()">Enviar solicitudes</button>
+    <div id="masivo-msg" style="margin:10px 12px 0"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+var WORKER='https://throbbing-mouse-e218contratistas-api.giovannycardonaq.workers.dev';
+var API='https://throbbing-mouse-e218contratistas-api.giovannycardonaq.workers.dev/api';
+var CURSOS={sst:null,alt:null,conf:null,esp:null};
+var FOTO_B64=null,FOTO_OK=false;
+var PERSONAS_MASIVO=[];
+
+var FESTIVOS=['2025-01-01','2025-01-06','2025-03-24','2025-04-17','2025-04-18','2025-05-01','2025-06-02','2025-06-23','2025-06-30','2025-07-20','2025-08-07','2025-08-18','2025-10-13','2025-11-03','2025-11-17','2025-12-08','2025-12-25','2026-01-01','2026-01-12','2026-03-23','2026-04-02','2026-04-03','2026-05-01','2026-05-18','2026-06-08','2026-06-15','2026-07-20','2026-08-07','2026-08-17','2026-10-12','2026-11-02','2026-11-16','2026-12-08','2026-12-25'];
+var NIT_TABLE=[{min:0,max:7,dia:2},{min:8,max:14,dia:3},{min:15,max:21,dia:4},{min:22,max:28,dia:5},{min:29,max:35,dia:6},{min:36,max:42,dia:7},{min:43,max:49,dia:8},{min:50,max:56,dia:9},{min:57,max:63,dia:10},{min:64,max:69,dia:11},{min:70,max:75,dia:12},{min:76,max:81,dia:13},{min:82,max:87,dia:14},{min:88,max:93,dia:15},{min:94,max:99,dia:16}];
+
+function esFestivo(d){return FESTIVOS.indexOf(d.toISOString().slice(0,10))>-1;}
+function esDiaHabil(d){var day=d.getDay();return day!==0&&day!==6&&!esFestivo(d);}
+function getDiaHabilN(year,month,n){var count=0;var d=new Date(year,month,1);while(count<n){if(esDiaHabil(d))count++;if(count<n)d=new Date(d.getTime()+86400000);}return d;}
+function getDiaHabilLimite(nit,periodo){
+  var year=parseInt(periodo.slice(0,4)),month=parseInt(periodo.slice(4,6))-1;
+  var nm=month+1,ny=year;if(nm>11){nm=0;ny++;}
+  var u2=parseInt(nit.toString().replace(/[^0-9]/g,'').slice(-2)),dh=2;
+  for(var i=0;i<NIT_TABLE.length;i++){if(u2>=NIT_TABLE[i].min&&u2<=NIT_TABLE[i].max){dh=NIT_TABLE[i].dia;break;}}
+  return getDiaHabilN(ny,nm,dh);
+}
+function countDiasHabiles(desde,hasta){
+  var count=0,d=new Date(desde.getTime()+86400000);
+  while(d<=hasta){if(esDiaHabil(d))count++;d=new Date(d.getTime()+86400000);}
+  return count;
+}
+
+function calcSemaforo(parsed){
+  if(!parsed||!parsed.nit_aportante||!parsed.periodo_servicio)return null;
+  try{
+    var hoy=new Date();hoy.setHours(0,0,0,0);
+    var limite=getDiaHabilLimite(parsed.nit_aportante,parsed.periodo_servicio);
+    var limStr=limite.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+    if(hoy<=limite){
+      var dh=countDiasHabiles(hoy,limite);
+      if(dh<=5)return{color:'amarillo',titulo:'PRÓXIMA A VENCER',sub:'Quedan '+dh+' día(s) hábil(es). Límite: '+limStr,dias:dh,fecha:limStr};
+      return{color:'verde',titulo:'VIGENTE',sub:'Límite de pago: '+limStr+' ('+dh+' días hábiles)',dias:dh,fecha:limStr};
+    }else{
+      if(parsed.fecha_pago){
+        var fp=new Date(parsed.fecha_pago+'T12:00:00');
+        var mismoMes=(fp.getFullYear()===limite.getFullYear()&&fp.getMonth()===limite.getMonth());
+        var mismaFecha=fp.toDateString()===limite.toDateString();
+        if((fp<=limite||mismaFecha)&&(mismoMes||mismaFecha)){
+          var py=parseInt(parsed.periodo_servicio.slice(0,4)),pm=parseInt(parsed.periodo_servicio.slice(4,6));
+          var nm2=pm+1>12?1:pm+1,ny2=pm+1>12?py+1:py;
+          var np=String(ny2)+String(nm2).padStart(2,'0');
+          var pl=getDiaHabilLimite(parsed.nit_aportante,np);
+          var ps=pl.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+          var dp=countDiasHabiles(hoy,pl);
+          if(hoy>pl)return{color:'rojo',titulo:'VENCIDA',sub:'Límite del próximo pago fue el '+ps,dias:0,fecha:ps};
+          if(dp<=5)return{color:'amarillo',titulo:'PRÓXIMA A VENCER',sub:'Próximo límite: '+ps+' ('+dp+' días hábiles)',dias:dp,fecha:ps};
+          return{color:'verde',titulo:'VIGENTE',sub:'Pagó a tiempo. Próximo límite: '+ps+' ('+dp+' días hábiles)',dias:dp,fecha:ps};
+        }else if(fp<=limite&&!mismoMes){
+          return{color:'rojo',titulo:'VENCIDA',sub:'Límite fue el '+limStr+'. Pago del mes anterior.',dias:0,fecha:limStr};
+        }
+      }
+      return{color:'rojo',titulo:'VENCIDA',sub:'Límite fue el '+limStr+'. Presente planilla actualizada.',dias:0,fecha:limStr};
+    }
+  }catch(e){return null;}
+}
+
+function validarPILA(datos,nombreReg){
+  var err=[],adv=[],ok=[];
+  if(!datos.estado_planilla||datos.estado_planilla.toUpperCase().indexOf('PAGAD')===-1){err.push('La planilla NO está en estado PAGADA/PAGADO');}else{ok.push('Planilla '+datos.estado_planilla);}
+  var hoy=new Date();
+  var mesAnt=hoy.getMonth()===0?(hoy.getFullYear()-1)*100+12:hoy.getFullYear()*100+hoy.getMonth();
+  if(datos.periodo_servicio){
+    var ps=parseInt(datos.periodo_servicio);
+    var mesAct=hoy.getFullYear()*100+(hoy.getMonth()+1);
+    if(ps===mesAnt){ok.push('Período de servicio correcto: '+datos.periodo_servicio);}
+    else if(ps===mesAct){adv.push('Período de servicio es el mes actual');}
+    else if(ps<mesAnt){err.push('Período desactualizado: '+datos.periodo_servicio);}
+  }else{err.push('No se detectó período de servicio');}
+  if(datos.tipo_persona&&datos.periodo_servicio){
+    if(!datos.periodo_cotizacion){adv.push('No se detectó período de cotización');}
+    else{
+      var pc=parseInt(datos.periodo_cotizacion),ps2=parseInt(datos.periodo_servicio),diff=ps2-pc;
+      if(datos.tipo_persona.toUpperCase().indexOf('JURIDICA')>-1||datos.tipo_persona.toUpperCase().indexOf('JURÍDICA')>-1){
+        if(diff===1||(pc%100===12&&ps2%100===1)){ok.push('Tipo jurídica: períodos correctos');}
+        else{err.push('Tipo jurídica: cotización ('+datos.periodo_cotizacion+') vs servicio ('+datos.periodo_servicio+')');}
+      }else{
+        if(diff===0){ok.push('Tipo natural: períodos correctos');}
+        else{err.push('Tipo natural: cotización ('+datos.periodo_cotizacion+') vs servicio ('+datos.periodo_servicio+')');}
+      }
+    }
+  }
+  if(datos.nit_aportante&&datos.periodo_servicio&&datos.fecha_pago){
+    try{
+      var lim=getDiaHabilLimite(datos.nit_aportante,datos.periodo_servicio);
+      var fp=new Date(datos.fecha_pago+'T12:00:00');
+      var ls=lim.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+      var mfv=fp.toDateString()===lim.toDateString();
+      if(fp<=lim||mfv){ok.push('Pago a tiempo. Límite: '+ls);}
+      else{err.push('Pago extemporáneo. Límite era '+ls);}
+    }catch(e){adv.push('No se pudo calcular fecha límite');}
+  }
+  if(datos.nombre_afiliado&&nombreReg){
+    var nd=datos.nombre_afiliado.toUpperCase().replace(/\s+/g,' ').trim();
+    var nr=nombreReg.toUpperCase().replace(/\s+/g,' ').trim();
+    var pd=nd.split(' '),pr=nr.split(' '),coin=0;
+    pd.forEach(function(p){if(p.length>2&&pr.indexOf(p)>-1)coin++;});
+    if(coin>=2){ok.push('Nombre coincide');}
+    else if(coin===1){adv.push('Nombre parcialmente coincide');}
+    else{err.push('Nombre NO coincide: "'+datos.nombre_afiliado+'" vs "'+nombreReg+'"');}
+  }
+  return{errores:err,advertencias:adv,ok:ok};
+}
+
+function getKey(){return localStorage.getItem('anthropic_key')||'';}
+
+function imprimirCarnet(){
+  var carnet=document.getElementById('carnet-fisico');
+  if(!carnet){alert('Primero consulta tu carnet.');return;}
+  var win=window.open('','_blank','width=400,height=700');
+  var css='@page{size:85.6mm 136mm;margin:0}body{margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:white;-webkit-print-color-adjust:exact;print-color-adjust:exact}';
+  win.document.open();
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Carnet</title><style>'+css+'</style></head><body>'+carnet.outerHTML+'</body></html>');
+  win.document.close();
+  setTimeout(function(){win.print();},1000);
+}
+
+function guardarCarnet(){
+  var carnet=document.getElementById('carnet-fisico');
+  if(!carnet){alert('Primero consulta tu carnet.');return;}
+  if(typeof html2canvas==='undefined'){
+    var script=document.createElement('script');
+    script.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    script.onload=function(){capturarCarnet(carnet);};
+    document.head.appendChild(script);
+  } else {
+    capturarCarnet(carnet);
+  }
+}
+
+function capturarCarnet(carnet){
+  html2canvas(carnet,{scale:3,useCORS:true,backgroundColor:null}).then(function(canvas){
+    var link=document.createElement('a');
+    var sol=window._currentCarnetSol||{};
+    link.download='carnet-'+(sol.nom||'contratista').replace(/\s+/g,'-').toLowerCase()+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  });
+}
+
+function buscarCarnet(){
+  var cod=document.getElementById('cod-carnet').value.trim();
+  if(!cod){alert('Ingresa el código de autorización.');return;}
+  var div=document.getElementById('carnet-result');
+  div.innerHTML='<div class="ia-box"><div class="ia-loading"><div class="spinner"></div><br>Buscando...</div></div>';
+  var xhr=new XMLHttpRequest();
+  xhr.open('GET',API+'/solicitudes',true);
+  xhr.onreadystatechange=function(){
+    if(xhr.readyState!==4)return;
+    if(xhr.status!==200){div.innerHTML='<div class="alert a-err">Error de conexión.</div>';return;}
+    var data;
+    try{data=JSON.parse(xhr.responseText);}catch(e){div.innerHTML='<div class="alert a-err">Error al leer datos.</div>';return;}
+    var sol=data.find(function(s){return s.codigo&&s.codigo.toUpperCase()===cod.toUpperCase();});
+    if(!sol){div.innerHTML='<div class="alert a-err">Código no encontrado. Verifica que sea correcto.</div>';return;}
+    if(sol.estado!=='aprobado'){div.innerHTML='<div class="alert a-warn">Tu solicitud aún está en revisión.</div>';return;}
+    // Show carnet
+    var vigDate=sol.fechaVigencia?new Date(sol.fechaVigencia):null;
+    var vigStr=vigDate?vigDate.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'}):'';
+    var hoy=new Date();hoy.setHours(0,0,0,0);
+    var vigente=vigDate&&vigDate>=hoy;
+    var color=vigente?'#3B6D11':'#A32D2D';
+    var pd=sol.pilaData||{};
+    var diasRestantes=vigDate?Math.ceil((vigDate-new Date())/864e5):0;
+    var diasTexto=vigente?(diasRestantes>0?diasRestantes+' días hábiles restantes':'Último día'):'VENCIDO';
+    div.innerHTML=
+      '<div style="display:flex;gap:10px;margin-bottom:12px">'+
+        '<button onclick="imprimirCarnet()" style="flex:1;height:44px;border:none;background:#185FA5;color:white;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">🖨 Imprimir carnet</button>'+
+        '<button onclick="guardarCarnet()" style="flex:1;height:44px;border:1.5px solid #185FA5;background:white;color:#185FA5;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">💾 Guardar imagen</button>'+
+      '</div>'+
+      '<div id="carnet-fisico" style="width:240px;margin:0 auto;background:linear-gradient(160deg,#0D3B6E 0%,#185FA5 100%);border-radius:14px;padding:0;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.25)">'+
+        '<div style="background:white;margin:10px 10px 0;border-radius:10px 10px 0 0;padding:14px 12px 10px;text-align:center">'+
+          '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px">'+
+            '<div style="background:#2d7a3a;border-radius:4px;padding:2px 6px;display:flex;align-items:center;gap:2px">'+
+              '<span style="color:white;font-weight:800;font-size:9px">GRUPO</span>'+
+              '<span style="color:white;font-weight:800;font-size:12px">Bios</span>'+
+            '</div>'+
+            '<span style="font-size:8px;color:#6B6A65;font-weight:600;letter-spacing:.04em">CONTROL DE CONTRATISTAS</span>'+
+          '</div>'+
+          (sol.foto?
+            '<img src="'+sol.foto+'" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid '+(vigente?'#3B6D11':'#A32D2D')+';display:block;margin:0 auto 8px">':
+            '<div style="width:72px;height:72px;border-radius:50%;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#0C447C;margin:0 auto 8px">'+sol.nom.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('')+'</div>'
+          )+
+          '<div style="font-weight:700;font-size:13px;color:#1A1918;line-height:1.2;margin-bottom:2px">'+sol.nom+'</div>'+
+          '<div style="font-size:10px;color:#6B6A65;margin-bottom:6px">'+sol.emp+'</div>'+
+          '<span style="display:inline-block;padding:2px 10px;border-radius:8px;font-size:9px;font-weight:700;background:'+(vigente?'#EAF3DE':'#FCEBEB')+';color:'+(vigente?'#27500A':'#791F1F')+'">'+( vigente?'✓ AUTORIZADO':'✗ VENCIDO')+'</span>'+
+        '</div>'+
+        '<div style="padding:8px 10px;color:white">'+
+          '<div style="display:flex;justify-content:space-between;font-size:9px;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,.2)"><span style="opacity:.8">Sede</span><span style="font-weight:600">'+(sol.sede||'—')+'</span></div>'+
+          '<div style="display:flex;justify-content:space-between;font-size:9px;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,.2)"><span style="opacity:.8">Área</span><span style="font-weight:600">'+sol.area+'</span></div>'+
+          '<div style="display:flex;justify-content:space-between;font-size:9px;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,.2)"><span style="opacity:.8">ARL</span><span style="font-weight:600">'+(pd.arl_nombre||'—')+'</span></div>'+
+          '<div style="display:flex;justify-content:space-between;font-size:9px;padding:3px 0;border-bottom:0.5px solid rgba(255,255,255,.2)"><span style="opacity:.8">Válido hasta</span><span style="font-weight:600">'+vigStr+'</span></div>'+
+          '<div style="display:flex;justify-content:space-between;font-size:9px;padding:3px 0"><span style="opacity:.8">Vigencia</span><span style="font-weight:700;color:'+(vigente?'#97C459':'#F09595')+'">'+diasTexto+'</span></div>'+
+        '</div>'+
+        '<div style="background:white;margin:0 10px 10px;border-radius:0 0 10px 10px;padding:8px;position:relative">'+
+          '<div id="qr-prov" style="display:flex;justify-content:center"></div>'+
+          (!vigente?'<div style="position:absolute;inset:0;background:rgba(0,0,0,.6);border-radius:0 0 10px 10px;display:flex;align-items:center;justify-content:center"><div style="color:white;font-weight:700;font-size:14px;text-align:center;transform:rotate(-15deg);border:3px solid white;padding:4px 10px;border-radius:4px">VENCIDO</div></div>':'')+
+        '</div>'+
+        '<div style="text-align:center;padding:4px 10px 10px;font-size:8px;color:rgba(255,255,255,.7);font-family:monospace">'+sol.codigo+'</div>'+
+      '</div>';
+    // Generate QR
+    var verUrl='https://giovannycardona-hub.github.io/CONTRATISTAS/proveedor.html?ver='+encodeURIComponent(sol.codigo)+'&nom='+encodeURIComponent(sol.nom)+'&emp='+encodeURIComponent(sol.emp)+'&sede='+encodeURIComponent(sol.sede||'')+'&hasta='+encodeURIComponent(vigStr)+'&arl='+encodeURIComponent(pd.arl_nombre||'')+'&dias='+(sol.diasAutorizados||1);
+    window._currentCarnetSol=sol;
+    window._currentCarnetUrl=verUrl;
+    var qrSize=vigente?140:140;
+    function generarQR(){
+      var qrDiv=document.getElementById('qr-prov');
+      if(qrDiv)new QRCode(qrDiv,{text:verUrl,width:qrSize,height:qrSize});
+    }
+    if(typeof QRCode!=='undefined'){generarQR();}
+    else{
+      var script=document.createElement('script');
+      script.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+      script.onload=generarQR;
+      document.head.appendChild(script);
+    }
+  };
+  xhr.send();
+}
+
+// Manual tracking
+var _manualAbierto=false;
+var _manualTsAbrir=null;
+var _manualTsConfirm=null;
+var _manualOk=false;
+var MANUAL_URL='https://drive.google.com/file/d/1i7rDzMPvCncXy2QFUQs8vLJk7TrsdnpV/view';
+
+function abrirManual(){
+  _manualAbierto=true;
+  _manualTsAbrir=new Date();
+  window.open(MANUAL_URL,'_blank');
+  // Enable checkbox after 10 seconds
+  setTimeout(function(){
+    var chk=document.getElementById('chk-manual');
+    if(chk){
+      chk.disabled=false;
+      document.getElementById('manual-tiempo').style.display='block';
+      document.getElementById('manual-tiempo').innerHTML='✅ Manual abierto. Puedes confirmar que lo leíste.';
+    }
+    document.getElementById('btn-abrir-manual').style.background='#3B6D11';
+    document.getElementById('btn-abrir-manual').textContent='✓ Manual abierto - Confirma que lo leíste abajo';
+  },10000);
+}
+
+function checkManual(){
+  var chk=document.getElementById('chk-manual');
+  _manualOk=chk&&chk.checked;
+  if(_manualOk){
+    _manualTsConfirm=new Date();
+    var tiempoMs=_manualTsAbrir?(_manualTsConfirm-_manualTsAbrir):0;
+    var tiempoMin=Math.round(tiempoMs/60000);
+    var tiempoSeg=Math.round(tiempoMs/1000);
+    var tiempoStr=tiempoMin>0?tiempoMin+' min':tiempoSeg+' seg';
+    document.getElementById('manual-result').innerHTML='<div class="alert a-ok">Manual confirmado. Tiempo de lectura: '+tiempoStr+'</div>';
+    window._manualTiempo=tiempoMs;
+  } else {
+    document.getElementById('manual-result').innerHTML='';
+    window._manualTiempo=0;
+  }
+  cp();
+}
+
+var _tipoContratista='directo';
+var _cartaSubB64=null;
+
+function setTipo(tipo){
+  _tipoContratista=tipo;
+  document.getElementById('btn-tipo-directo').className='curso-btn'+(tipo==='directo'?' sel-si':'');
+  document.getElementById('btn-tipo-sub').className='curso-btn'+(tipo==='sub'?' sel-si':'');
+  document.getElementById('sub-fields').style.display=tipo==='sub'?'block':'none';
+  cp();
+}
+
+function hCartaSub(input){
+  var file=input.files[0];if(!file)return;
+  toBase64(file).then(function(b64){
+    _cartaSubB64='data:'+file.type+';base64,'+b64;
+    document.getElementById('carta-sub-result').innerHTML='<div class="alert a-ok" style="margin-top:8px">Carta adjuntada: '+file.name+'</div>';
+    cp();
+  });
+}
+
+function switchMode(mode,btn){
+  document.querySelectorAll('.mode-tab').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('on');});
+  btn.classList.add('on');
+  document.getElementById('pane-'+mode).classList.add('on');
+}
+
+function setCurso(c,v){
+  CURSOS[c]=v;
+  var si=document.getElementById('btn-'+c+'-si'),no=document.getElementById('btn-'+c+'-no');
+  if(si)si.className='curso-btn'+(v==='si'?' sel-si':'');
+  if(no)no.className='curso-btn'+(v==='no'?' sel-no':'');
+  cp();
+}
+
+function toBase64(file){
+  return new Promise(function(res,rej){
+    var r=new FileReader();
+    r.onload=function(){res(r.result.split(',')[1]);};
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+}
+
+function hFoto(input){
+  var file=input.files[0];if(!file)return;
+  var key='';  // Worker uses its own API key
+  var res=document.getElementById('foto-result');
+  res.innerHTML='<div class="ia-box"><div class="ia-loading"><div class="spinner"></div><br>Extrayendo foto de la cédula...</div></div>';
+  var _b64masivo=null;var _isPDFmasivo=isPDF;
+  toBase64(file).then(function(b64){_b64masivo=b64;
+    var mediaType=file.type.startsWith('image/')?file.type:'image/jpeg';
+    var isPDF=file.type==='application/pdf'||file.name.toLowerCase().indexOf('.pdf')>-1;
+    if(!key){
+      FOTO_B64='data:'+mediaType+';base64,'+b64;
+      FOTO_OK=true;
+      res.innerHTML='<img src="'+FOTO_B64+'" class="foto-preview"><div class="alert a-ok" style="margin-top:8px">Cédula cargada.</div>';
+      cp();return;
+    }
+    var msgContent;
+    if(isPDF){
+      msgContent=[
+        {type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
+        {type:'text',text:'Esta es una cédula de ciudadanía colombiana. Responde en JSON sin markdown: {"tiene_foto":true/false,"nombre_completo":null,"numero_cedula":null}. Si ves una foto de rostro en el documento indica tiene_foto=true.'}
+      ];
+    } else {
+      msgContent=[
+        {type:'image',source:{type:'base64',media_type:mediaType,data:b64}},
+        {type:'text',text:'Esta es una cédula de ciudadanía colombiana. Responde en JSON sin markdown: {"tiene_foto":true/false,"nombre_completo":null,"numero_cedula":null}. Si ves una foto de rostro en el documento indica tiene_foto=true.'}
+      ];
+    }
+    return fetch(WORKER,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({apiKey:key,model:'claude-opus-4-5',max_tokens:200,messages:[{role:'user',content:msgContent}]})
+    }).then(function(r){return r.json();}).then(function(data){
+      var res2=document.getElementById('foto-result');
+      if(data.error){
+        FOTO_B64='data:'+mediaType+';base64,'+b64;
+        FOTO_OK=true;
+        res2.innerHTML='<img src="'+FOTO_B64+'" class="foto-preview"><div class="alert a-warn" style="margin-top:8px">Cédula cargada.</div>';
+        cp();return;
+      }
+      var txt=data.content[0].text.trim().replace(/```json|```/g,'').trim();
+      var parsed;
+      try{parsed=JSON.parse(txt);}catch(e){var m=txt.match(/\{[\s\S]*\}/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
+      // Use the cedula image as the carnet photo
+      FOTO_B64='data:'+mediaType+';base64,'+b64;
+      FOTO_OK=true;
+      // Auto-fill nombre and cedula if empty
+      if(parsed&&parsed.nombre_completo&&!document.getElementById('p-nom').value.trim()){
+        document.getElementById('p-nom').value=parsed.nombre_completo;
+      }
+      if(parsed&&parsed.numero_cedula&&!document.getElementById('p-doc').value.trim()){
+        document.getElementById('p-doc').value=parsed.numero_cedula;
+        reprocesarPlanilla();
+      }
+      var msg=parsed&&parsed.tiene_foto?
+        '<div class="alert a-ok" style="margin-top:8px">Cédula procesada. Tu foto será usada en el carnet.</div>':
+        '<div class="alert a-warn" style="margin-top:8px">Cédula cargada. Asegúrate que la foto sea clara.</div>';
+      res2.innerHTML='<img src="'+FOTO_B64+'" class="foto-preview">'+msg;
+      cp();
+    });
+  }).catch(function(){
+    FOTO_OK=true;
+    document.getElementById('foto-result').innerHTML='<div class="alert a-warn" style="margin-top:8px">Cédula cargada.</div>';
+    cp();
+  });
+}
+
+function reprocesarPlanilla(){
+  if(!window._lastFile)return;
+  clearTimeout(window._reprocTimer);
+  window._reprocTimer=setTimeout(function(){
+    var ced=document.getElementById('p-doc').value.trim();
+    if(ced.length>=6)hFiles({files:[window._lastFile]});
+  },800);
+}
+
+function hFiles(input){
+  var file=input.files[0];if(!file)return;
+  window._lastFile=file;
+  var key='';  // Worker uses its own API key
+  var iaDiv=document.getElementById('ia-result');
+  document.getElementById('val-result').innerHTML='';
+  document.getElementById('semaforo-result').innerHTML='';
+  var isPDF=file.type==='application/pdf'||file.name.toLowerCase().indexOf('.pdf')>-1;
+  var isImg=file.type.indexOf('image/')===0;
+  if(!isPDF&&!isImg){iaDiv.innerHTML='<div class="alert a-warn">Solo imágenes o PDF.</div>';return;}
+  iaDiv.innerHTML='<div class="ia-box"><div class="ia-loading"><div class="spinner"></div><br>Analizando planilla...</div></div>';
+  var _b64masivo=null;var _isPDFmasivo=isPDF;
+  toBase64(file).then(function(b64){_b64masivo=b64;
+    var ced=document.getElementById('p-doc').value.trim();
+    var prompt='Eres experto en seguridad social colombiana (SuAporte, Compensar/miplanilla u otros). '+(ced?'Busca SOLO la cedula '+ced+'. Si no aparece responde unicamente: CEDULA_NO_ENCONTRADA. Si aparece extrae sus datos. ':'')+'Devuelve JSON sin markdown: {"estado_planilla":null,"periodo_cotizacion":null,"periodo_servicio":null,"fecha_pago":null,"tipo_persona":null,"nit_aportante":null,"razon_social_aportante":null,"nombre_afiliado":null,"cedula_afiliado":null,"arl_nombre":null,"eps_nombre":null,"pension_fondo":null}. REGLAS: 1) estado_planilla=PAGADO si tiene fecha de pago aunque no lo diga, PENDIENTE si no. 2) tipo_persona: si el aportante tiene NI/NIT o la razon social incluye SAS/S.A.S/S.A/LTDA/SA/INC o es una empresa = JURIDICA. Si el aportante tiene CC/CE y es una persona natural independiente = NATURAL. 3) periodo_servicio=YYYYMM del periodo de salud mas reciente. 4) periodo_cotizacion=YYYYMM del periodo de pension. 5) fecha_pago=YYYY-MM-DD. 6) nit_aportante=solo digitos del NIT o cedula del aportante. 7) null si no existe el dato.';
+    var content;
+    if(isPDF){content=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:prompt}];}
+    else{content=[{type:'image',source:{type:'base64',media_type:file.type,data:b64}},{type:'text',text:prompt}];}
+    return fetch(WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:key,model:'claude-opus-4-5',max_tokens:600,messages:[{role:'user',content:content}]})});
+  }).then(function(r){return r.json();}).then(function(data){
+    if(data.error){iaDiv.innerHTML='<div class="alert a-err">Error: '+data.error.message+'</div>';return;}
+    var txt=data.content[0].text.trim().replace(/```json|```/g,'').trim();
+    if(txt==='CEDULA_NO_ENCONTRADA'){iaDiv.innerHTML='<div class="alert a-err">La cédula no aparece en esta planilla.</div>';window._pilaValida=false;cp();return;}
+    var parsed;
+    try{parsed=JSON.parse(txt);}catch(e){var m=txt.match(/\{[\s\S]*\}/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
+    if(!parsed){iaDiv.innerHTML='<div class="alert a-err">No se pudo interpretar el documento.</div>';return;}
+    if(parsed.nombre_afiliado&&!document.getElementById('p-nom').value.trim())document.getElementById('p-nom').value=parsed.nombre_afiliado;
+    if(parsed.cedula_afiliado&&!document.getElementById('p-doc').value.trim())document.getElementById('p-doc').value=parsed.cedula_afiliado;
+    var html='<div class="ia-box"><div class="ia-title">Datos extraídos</div>';
+    if(parsed.estado_planilla)html+='<div class="ia-row"><span class="ia-k">Estado</span><span class="ia-v '+(parsed.estado_planilla.indexOf('PAGAD')>-1?'ok':'err')+'">'+parsed.estado_planilla+'</span></div>';
+    if(parsed.razon_social_aportante)html+='<div class="ia-row"><span class="ia-k">Aportante</span><span class="ia-v">'+parsed.razon_social_aportante+'</span></div>';
+    if(parsed.nombre_afiliado)html+='<div class="ia-row"><span class="ia-k">Afiliado</span><span class="ia-v">'+parsed.nombre_afiliado+'</span></div>';
+    if(parsed.periodo_servicio)html+='<div class="ia-row"><span class="ia-k">Período servicio</span><span class="ia-v">'+parsed.periodo_servicio+'</span></div>';
+    if(parsed.fecha_pago)html+='<div class="ia-row"><span class="ia-k">Fecha pago</span><span class="ia-v">'+parsed.fecha_pago+'</span></div>';
+    if(parsed.arl_nombre)html+='<div class="ia-row"><span class="ia-k">ARL</span><span class="ia-v">'+parsed.arl_nombre+'</span></div>';
+    if(parsed.eps_nombre)html+='<div class="ia-row"><span class="ia-k">EPS</span><span class="ia-v">'+parsed.eps_nombre+'</span></div>';
+    html+='</div>';
+    iaDiv.innerHTML=html;
+    var nr=document.getElementById('p-nom').value.trim();
+    var res=validarPILA(parsed,nr);
+    var hasErr=res.errores.length>0,hasAdv=res.advertencias.length>0;
+    var cls=hasErr?'val-err':hasAdv?'val-warn':'val-ok';
+    var tit=hasErr?'PLANILLA NO VÁLIDA':hasAdv?'CON OBSERVACIONES':'PLANILLA VÁLIDA';
+    var vhtml='<div class="val-result '+cls+'"><div class="val-title">'+tit+'</div>';
+    res.errores.forEach(function(e){vhtml+='<div class="val-item"><span>✗</span><span>'+e+'</span></div>';});
+    res.advertencias.forEach(function(a){vhtml+='<div class="val-item"><span>⚠</span><span>'+a+'</span></div>';});
+    res.ok.forEach(function(o){vhtml+='<div class="val-item"><span>✓</span><span>'+o+'</span></div>';});
+    vhtml+='</div>';
+    document.getElementById('val-result').innerHTML=vhtml;
+    var sem=calcSemaforo(parsed);
+    if(sem){
+      var dc='sem-dot-'+(sem.color==='verde'?'v':sem.color==='amarillo'?'a':'r');
+      document.getElementById('semaforo-result').innerHTML='<div class="semaforo sem-'+sem.color+'"><div class="sem-dot '+dc+'"></div><div class="sem-texto"><div class="sem-titulo">'+sem.titulo+'</div><div class="sem-sub">'+sem.sub+'</div></div></div>';
+      window._semaforo=sem;
+    }
+    window._pilaValida=!hasErr;
+    window._pilaData=parsed;
+    cp();
+  }).catch(function(e){iaDiv.innerHTML='<div class="alert a-err">Error: '+e.message+'</div>';});
+}
+
+function hCert(input){
+  var fl=document.getElementById('fl-cert');
+  Array.from(input.files).forEach(function(f){
+    var d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg);border-radius:var(--r);font-size:12px;border:0.5px solid var(--border);margin-top:6px';
+    d.innerHTML='<span>'+f.name+'</span><span class="badge b-ok">OK</span>';
+    fl.appendChild(d);
+  });
+}
+
+function cp(){
+  var nom=document.getElementById('p-nom').value.trim();
+  var doc=document.getElementById('p-doc').value.trim();
+  var emp=document.getElementById('p-emp').value.trim();
+  var area=document.getElementById('p-area').value;
+  var sede=document.getElementById('p-sede').value;
+  var mail=document.getElementById('p-mail').value.trim();
+  var tel=document.getElementById('p-tel').value.trim();
+  var pilaOk=window._pilaValida===true;
+  var sstOk=CURSOS.sst==='si';
+  var fotoOk=FOTO_OK===true;
+  var manualOk=_manualOk===true;
+  var checks=[!!manualOk,!!nom,!!doc,!!emp,!!area,!!sede,!!mail,!!tel,!!pilaOk,!!sstOk];
+  var n=checks.filter(Boolean).length;
+  var pct=Math.round(n/checks.length*100);
+  document.getElementById('prog').style.width=pct+'%';
+  var falta=[];
+  if(!nom||!doc||!emp)falta.push('datos personales');
+  if(!area||!sede)falta.push('área y sede');
+  if(!mail||!tel)falta.push('correo y celular');
+  if(!manualOk)falta.push('confirmar lectura del manual SST');
+  if(!pilaOk)falta.push('planilla PILA válida');
+  if(!sstOk)falta.push('inducción SST');
+  document.getElementById('prog-lbl').textContent=falta.length?'Faltan: '+falta.join(', '):'Listo para enviar';
+  document.getElementById('btn-env').disabled=pct<100;
+}
+
+function enviar(){
+  var nom=document.getElementById('p-nom').value.trim();
+  var doc=document.getElementById('p-doc').value.trim();
+  var emp=document.getElementById('p-emp').value.trim();
+  var area=document.getElementById('p-area').value;
+  var sede=document.getElementById('p-sede').value;
+  var mail=document.getElementById('p-mail').value.trim();
+  var tel=document.getElementById('p-tel').value.trim();
+  var obs=document.getElementById('p-obs').value;
+  var sol={id:'SOL-'+Date.now(),num:'#'+String(Date.now()).slice(-6),nom:nom,doc:doc,emp:emp,area:area,sede:sede,mail:mail,tel:tel,obs:obs,
+    cursos:JSON.parse(JSON.stringify(CURSOS)),pilaData:window._pilaData||{},
+    semaforo:window._semaforo,foto:FOTO_B64?FOTO_B64.slice(0,50000):null,ts:new Date(),estado:'pendiente'};
+  var xhrSend=new XMLHttpRequest();
+  xhrSend.open('POST', API+'/solicitud', true);
+  xhrSend.setRequestHeader('Content-Type','application/json');
+  xhrSend.onreadystatechange=function(){
+    if(xhrSend.readyState!==4)return;
+    if(xhrSend.status===200){
+      document.getElementById('pane-individual').innerHTML=
+        '<div class="exito-box"><div class="exito-ic">✅</div>'+
+        '<div class="exito-titulo">¡Solicitud '+sol.num+' enviada!</div>'+
+        '<div class="exito-sub">Solicitud '+sol.num+' recibida correctamente.<br>El equipo de Autorizaciones revisará tus documentos.<br><br>Puedes cerrar esta ventana.</div></div>';
+    } else {
+      document.getElementById('prov-msg').innerHTML='<div class="alert a-err" style="margin:10px 12px 0">Error '+xhrSend.status+'. Intenta de nuevo.</div>';
+    }
+  };
+  xhrSend.onerror=function(){document.getElementById('prov-msg').innerHTML='<div class="alert a-err" style="margin:10px 12px 0">Error de red. Intenta de nuevo.</div>';};
+  xhrSend.send(JSON.stringify(sol));
+}
+
+// ===== MASIVO =====
+var _manualMasivoOk=false;
+var _manualMasivoTs=null;
+
+function abrirManualMasivo(){
+  _manualMasivoTs=new Date();
+  window.open('https://drive.google.com/file/d/1i7rDzMPvCncXy2QFUQs8vLJk7TrsdnpV/view','_blank');
+  setTimeout(function(){
+    var chk=document.getElementById('chk-manual-masivo');
+    if(chk){chk.disabled=false;}
+    var btn=document.getElementById('btn-manual-masivo');
+    if(btn){btn.style.background='#3B6D11';btn.textContent='✓ Manual abierto - Confirma abajo';}
+  },10000);
+}
+
+function checkManualMasivo(){
+  var chk=document.getElementById('chk-manual-masivo');
+  _manualMasivoOk=chk&&chk.checked;
+  updateProgMasivo();
+}
+
+function checkMasivo(){
+  var emp=document.getElementById('m-emp').value.trim();
+  var sede=document.getElementById('m-sede').value;
+  if(emp&&sede&&PERSONAS_MASIVO.length>0)renderPersonasMasivo();
+}
+
+function hMasivo(input){
+  var file=input.files[0];if(!file)return;
+  var file2=file;
+  var key='';  // Worker uses its own API key
+  var iaDiv=document.getElementById('masivo-ia');
+  iaDiv.innerHTML='<div class="ia-box" style="margin-top:10px"><div class="ia-loading"><div class="spinner"></div><br>Detectando trabajadores en la planilla...</div></div>';
+  var isPDF=file.type==='application/pdf'||file.name.toLowerCase().indexOf('.pdf')>-1;
+  var isImg=file.type.indexOf('image/')===0;
+  var _b64masivo=null;var _isPDFmasivo=isPDF;
+  toBase64(file).then(function(b64){_b64masivo=b64;
+    var prompt='Eres experto en planillas PILA colombianas. Analiza este documento y extrae TODOS los trabajadores/afiliados que aparecen. Devuelve JSON array sin markdown: [{"nombre":null,"cedula":null,"arl":null,"eps":null,"pension":null},...]. Extrae TODAS las personas que aparezcan en el documento. nombre en mayúsculas. cedula solo dígitos. Si solo hay una persona devuelve array de un elemento.';
+    var content;
+    if(isPDF){content=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:prompt}];}
+    else{content=[{type:'image',source:{type:'base64',media_type:file.type,data:b64}},{type:'text',text:prompt}];}
+    return fetch(WORKER,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({apiKey:key,model:'claude-opus-4-5',max_tokens:2000,messages:[{role:'user',content:content}]})
+    });
+  }).then(function(r){return r.json();}).then(function(data){
+    if(data.error){iaDiv.innerHTML='<div class="alert a-err">Error: '+data.error.message+'</div>';return;}
+    var txt=data.content[0].text.trim().replace(/```json|```/g,'').trim();
+    var parsed;
+    try{parsed=JSON.parse(txt);}catch(e){var m=txt.match(/\[[\s\S]*\]/);if(m)try{parsed=JSON.parse(m[0]);}catch(e2){}}
+    if(!parsed||!Array.isArray(parsed)||!parsed.length){
+      iaDiv.innerHTML='<div class="alert a-err">No se detectaron trabajadores. Verifica el documento.</div>';return;}
+    PERSONAS_MASIVO=parsed.map(function(p,i){return{idx:i,nombre:p.nombre||'',cedula:p.cedula||'',arl:p.arl||'',eps:p.eps||'',pension:p.pension||'',seleccionado:false,mail:'',cel:'',area:'',foto:null,fotoOk:false,semaforo:null,pilaData:null};});
+
+    iaDiv.innerHTML='<div class="alert a-ok" style="margin-top:10px">Se detectaron <strong>'+PERSONAS_MASIVO.length+' trabajadores</strong>. Validando planilla...</div>';
+    var pilaPrompt2='Eres experto en seguridad social colombiana. Extrae datos generales. JSON: {"estado_planilla":null,"periodo_cotizacion":null,"periodo_servicio":null,"fecha_pago":null,"tipo_persona":null,"nit_aportante":null,"razon_social_aportante":null,"arl_nombre":null}. PAGADO si tiene fecha de pago. nit solo digitos. periodo YYYYMM. fecha YYYY-MM-DD.';
+    var pc3=_isPDFmasivo?[{type:'document',source:{type:'base64',media_type:'application/pdf',data:_b64masivo}},{type:'text',text:pilaPrompt2}]:[{type:'image',source:{type:'base64',media_type:file.type,data:_b64masivo}},{type:'text',text:pilaPrompt2}];
+    fetch(WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({apiKey:'',model:'claude-opus-4-5',max_tokens:300,messages:[{role:'user',content:pc3}]})}).then(function(rp){return rp.json();}).then(function(dpila){
+      var sem3=null;
+      if(dpila&&dpila.content&&dpila.content[0]){var pt=dpila.content[0].text.trim().replace(/```json|```/g,'').trim();var pp;try{pp=JSON.parse(pt);}catch(e){}
+        if(pp){window._masivopilaData=pp;sem3=calcSemaforo(pp);window._masivoSemaforo=sem3;PERSONAS_MASIVO.forEach(function(p){p.semaforo=sem3;p.pilaData=pp;});}}
+      var semHtmlM=sem3?'<div class="semaforo sem-'+sem3.color+'" style="margin-top:8px"><div class="sem-dot sem-dot-'+(sem3.color==='verde'?'v':sem3.color==='amarillo'?'a':'r')+'"></div><div class="sem-texto"><div class="sem-titulo">'+sem3.titulo+'</div><div class="sem-sub">'+sem3.sub+'</div></div></div>':'';
+      iaDiv.innerHTML='<div class="alert a-ok" style="margin-top:10px">Se detectaron <strong>'+PERSONAS_MASIVO.length+' trabajadores</strong>. Selecciona los que van a ingresar.</div>'+semHtmlM;
+      renderPersonasMasivo();document.getElementById('masivo-actions').style.display='block';
+    }).catch(function(){
+      iaDiv.innerHTML='<div class="alert a-ok" style="margin-top:10px">Se detectaron <strong>'+PERSONAS_MASIVO.length+' trabajadores</strong>. Selecciona los que van a ingresar.</div>';
+      renderPersonasMasivo();document.getElementById('masivo-actions').style.display='block';
+    });
+  }).catch(function(e){iaDiv.innerHTML='<div class="alert a-err">Error: '+e.message+'</div>';});
+}
+
+function renderPersonasMasivo(){
+  var container=document.getElementById('masivo-personas');
+  var sede=document.getElementById('m-sede').value;
+  var emp=document.getElementById('m-emp').value.trim();
+  container.innerHTML='<div class="card"><div class="sec">Paso 2 · Selecciona los trabajadores que ingresan</div>'+
+    PERSONAS_MASIVO.map(function(p){
+      var ini=p.nombre.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('');
+      return '<div class="persona-card" id="pc-'+p.idx+'">'+
+        '<div class="persona-header" onclick="togglePersona('+p.idx+')">'+
+          '<input type="checkbox" class="persona-check" id="chk-'+p.idx+'" onclick="event.stopPropagation();selPersona('+p.idx+',this.checked)" '+(p.seleccionado?'checked':'')+'>'+
+          '<div class="foto-placeholder-mini" id="mini-foto-'+p.idx+'">'+ini+'</div>'+
+          '<div style="flex:1;min-width:0">'+
+            '<div class="persona-nombre">'+p.nombre+'</div>'+
+            '<div class="persona-cedula">CC '+p.cedula+(p.arl?' · '+p.arl:'')+'</div>'+
+          '</div>'+
+          '<span style="color:var(--text2);font-size:12px">'+(p.seleccionado?'▲':'▼')+'</span>'+
+        '</div>'+
+        '<div class="persona-body '+(p.seleccionado?'':'hidden')+'" id="pb-'+p.idx+'">'+
+          '<label class="upload-label" style="margin-bottom:10px;padding:12px" onclick="triggerFotoMasivo('+p.idx+',event)">'+
+            '<input type="file" id="foto-m-'+p.idx+'" accept="image/*,application/pdf,.pdf" onchange="hFotoMasivo(this,'+p.idx+')">'+
+            '<div class="upload-ic" style="font-size:18px;margin-bottom:4px">🪪</div>'+
+            '<strong style="font-size:12px">Foto cédula (opcional)</strong>'+
+          '</label>'+
+          '<div class="r2s">'+
+            '<div class="field-sm"><label>Celular</label><input type="tel" id="cel-'+p.idx+'" placeholder="+57 300..." oninput="updatePersona('+p.idx+')"></div>'+
+          '</div>'+
+          '<div class="r2s">'+
+            '<div class="field-sm"><label>Área *</label>'+
+              '<select id="area-'+p.idx+'" onchange="updatePersona('+p.idx+')">'+
+                '<option value="">Seleccionar...</option>'+
+                '<option>Producción</option><option>Mantenimiento</option>'+
+                '<option>Bodega / Logística</option><option>Administración</option>'+
+                '<option>Planta exterior</option><option>Cuarto frío</option><option>Eléctrico</option>'+
+              '</select>'+
+            '</div>'+
+            '<div class="field-sm"><label>SST</label>'+
+              '<select id="sst-'+p.idx+'" onchange="updatePersona('+p.idx+')">'+
+                '<option value="">...</option><option value="si">Sí tiene</option><option value="no">No tiene</option>'+
+              '</select>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    }).join('')+'</div>';
+  updateProgMasivo();
+}
+
+function triggerFotoMasivo(idx,e){
+  e.stopPropagation();
+  document.getElementById('foto-m-'+idx).click();
+}
+
+function hFotoMasivo(input,idx){
+  var file=input.files[0];if(!file)return;
+  var _b64masivo=null;var _isPDFmasivo=isPDF;
+  toBase64(file).then(function(b64){_b64masivo=b64;
+    var src='data:'+file.type+';base64,'+b64;
+    PERSONAS_MASIVO[idx].foto=src;
+    PERSONAS_MASIVO[idx].fotoOk=true;
+    var mini=document.getElementById('mini-foto-'+idx);
+    if(mini)mini.innerHTML='<img src="'+src+'" class="foto-mini">';
+    updatePersona(idx);
+  });
+}
+
+function togglePersona(idx){
+  var p=PERSONAS_MASIVO[idx];
+  p.seleccionado=!p.seleccionado;
+  var chk=document.getElementById('chk-'+idx);
+  if(chk)chk.checked=p.seleccionado;
+  var body=document.getElementById('pb-'+idx);
+  if(body)body.classList.toggle('hidden',!p.seleccionado);
+  updateProgMasivo();
+}
+
+function selPersona(idx,checked){
+  PERSONAS_MASIVO[idx].seleccionado=checked;
+  var body=document.getElementById('pb-'+idx);
+  if(body)body.classList.toggle('hidden',!checked);
+  updateProgMasivo();
+}
+
+function updatePersona(idx){
+  var p=PERSONAS_MASIVO[idx];
+  var mail=document.getElementById('mail-'+idx);
+  var cel=document.getElementById('cel-'+idx);
+  var area=document.getElementById('area-'+idx);
+  var sst=document.getElementById('sst-'+idx);
+  if(mail)p.mail=mail.value.trim();
+  if(cel)p.cel=cel.value.trim();
+  if(area)p.area=area.value;
+  if(sst)p.sst=sst.value;
+  updateProgMasivo();
+}
+
+function updateProgMasivo(){
+  var sel=PERSONAS_MASIVO.filter(function(p){return p.seleccionado;});
+  var completos=sel.filter(function(p){return p.area&&p.sst;});
+  var pct=sel.length?Math.round(completos.length/sel.length*100):0;
+  document.getElementById('prog-m').style.width=pct+'%';
+  var lbl=sel.length===0?'Selecciona al menos un colaborador':
+    completos.length===sel.length?'Listo para enviar ('+sel.length+' trabajadores)':
+    'Faltan datos en '+(sel.length-completos.length)+' colaborador(es)';
+  document.getElementById('prog-m-lbl').textContent=lbl;
+  document.getElementById('btn-masivo').disabled=!(sel.length>0&&completos.length===sel.length&&_manualMasivoOk);
+  if(!_manualMasivoOk&&sel.length>0)document.getElementById('prog-m-lbl').textContent='Debes confirmar el Manual SST primero';
+}
+
+function enviarMasivo(){
+  var sel=PERSONAS_MASIVO.filter(function(p){return p.seleccionado;});
+  var emp=document.getElementById('m-emp').value.trim();
+  var sede=document.getElementById('m-sede').value;
+  var sols=JSON.parse(localStorage.getItem('solicitudes_pendientes')||'[]');
+  sel.forEach(function(p){
+    var tsU=Date.now()+(p.idx*500);
+    var sol={
+      id:'SOL-'+tsU,num:'#'+String(tsU).slice(-6),
+      nom:p.nombre,doc:p.cedula,emp:emp,area:p.area,sede:sede,
+      mail:p.mail,tel:p.cel,obs:'Ingreso masivo',
+      cursos:{sst:p.sst,alt:'no',conf:'no',esp:'no'},
+      pilaData:Object.assign({arl_nombre:p.arl,eps_nombre:p.eps,pension_fondo:p.pension},p.pilaData||window._masivopilaData||{}),
+      foto:p.foto,ts:new Date(),estado:'pendiente',alertas:[]
+    };
+    sols.push(sol);
+  });
+  // Send sequentially to avoid KV conflicts
+  var msgDiv=document.getElementById('masivo-msg');
+  msgDiv.innerHTML='<div class="alert a-warn">Enviando '+sols.length+' solicitudes...</div>';
+  var enviados=0;
+  var errores=0;
+  function enviarSiguiente(idx){
+    if(idx>=sols.length){
+      var tabla=sols.map(function(s){
+        return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid #E0DED6;font-size:13px">'+
+          '<span style="font-weight:600">'+s.nom+'</span>'+
+          '<span style="font-family:monospace;color:#185FA5">'+(s.num||s.id.slice(-6))+'</span>'+
+        '</div>';
+      }).join('');
+      document.getElementById('pane-masivo').innerHTML=
+        '<div style="padding:20px 12px">'+
+        '<div style="text-align:center;margin-bottom:16px"><div style="font-size:48px">✅</div>'+
+        '<div style="font-size:20px;font-weight:700;color:#3B6D11;margin-top:8px">'+enviados+' solicitudes enviadas</div></div>'+
+        '<div style="background:white;border-radius:12px;border:1px solid #E0DED6;padding:14px;margin-bottom:12px">'+
+          '<div style="font-size:10px;font-weight:700;color:#6B6A65;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Código por persona</div>'+
+          tabla+
+        '</div>'+
+        '<div style="font-size:13px;color:#6B6A65;text-align:center">Autorizaciones revisará cada caso y notificará por correo.</div>'+
+        '</div>';
+      return;
+    }
+    var s=sols[idx];
+    var xhr=new XMLHttpRequest();
+    xhr.open('POST',API+'/solicitud',true);
+    xhr.setRequestHeader('Content-Type','application/json');
+    xhr.onreadystatechange=function(){
+      if(xhr.readyState!==4)return;
+      if(xhr.status===200){enviados++;}else{errores++;}
+      msgDiv.innerHTML='<div class="alert a-warn">Enviando '+(idx+1)+' de '+sols.length+'...</div>';
+      setTimeout(function(){enviarSiguiente(idx+1);},300);
+    };
+    xhr.onerror=function(){errores++;setTimeout(function(){enviarSiguiente(idx+1);},300);};
+    xhr.send(JSON.stringify(s));
+  }
+  enviarSiguiente(0);
+}
+
+window.onload=function(){
+  window._pilaValida=false;window._pilaData=null;window._semaforo=null;FOTO_OK=true;
+  var params=new URLSearchParams(window.location.search);
+  var ver=params.get('ver');
+  if(ver){
+    // QR scanned - show verification page
+    document.querySelector('.topbar').style.display='none';
+    document.querySelector('.mode-tabs').style.display='none';
+    document.querySelectorAll('.pane').forEach(function(p){p.style.display='none';});
+    var nom=params.get('nom')||'';
+    var emp=params.get('emp')||'';
+    var sede=params.get('sede')||'';
+    var hasta=params.get('hasta')||'';
+    var arl=params.get('arl')||'';
+    var dias=params.get('dias')||'';
+    var auth=params.get('auth')||'';
+    var cod=ver;
+    // Check if vigente
+    var vigente=false;
+    var diasRestantes=0;
+    if(hasta){
+      var partes=hasta.split('/');
+      var fechaHasta=partes.length===3?new Date(partes[2]+'-'+partes[1]+'-'+partes[0]+'T23:59:59'):null;
+      if(fechaHasta){vigente=fechaHasta>=new Date();diasRestantes=Math.ceil((fechaHasta-new Date())/864e5);}
+    }
+    var color=vigente?'#3B6D11':'#A32D2D';
+    var bg=vigente?'#F0F7E8':'#FDF0F0';
+    var verDiv=document.createElement('div');
+    verDiv.style.cssText='max-width:480px;margin:0 auto;padding:20px 16px;font-family:-apple-system,BlinkMacSystemFont,sans-serif';
+    verDiv.innerHTML=
+      '<div style="text-align:center;margin-bottom:20px">'+
+        '<div style="font-size:64px;margin-bottom:8px">'+(vigente?'✅':'❌')+'</div>'+
+        '<div style="font-size:26px;font-weight:700;color:'+color+'">'+(vigente?'AUTORIZADO':'VENCIDO')+'</div>'+
+        '<div style="font-size:13px;color:#6B6A65;margin-top:4px">Verificación de ingreso · Grupo Bios</div>'+
+      '</div>'+
+      '<div style="background:white;border-radius:14px;border:1px solid #E0DED6;padding:16px;margin-bottom:12px">'+
+        '<div style="font-weight:700;font-size:16px;margin-bottom:14px">'+nom+'</div>'+
+        (emp?'<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid #E0DED6;font-size:13px"><span style="color:#6B6A65">Empresa</span><span style="font-weight:600">'+emp+'</span></div>':'')+
+        (sede?'<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid #E0DED6;font-size:13px"><span style="color:#6B6A65">Sede</span><span style="font-weight:600">'+sede+'</span></div>':'')+
+        (arl?'<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid #E0DED6;font-size:13px"><span style="color:#6B6A65">ARL</span><span style="font-weight:600">'+arl+'</span></div>':'')+
+        (dias?'<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid #E0DED6;font-size:13px"><span style="color:#6B6A65">Días autorizados</span><span style="font-weight:600">'+dias+' días hábiles</span></div>':'')+
+        (auth?'<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid #E0DED6;font-size:13px"><span style="color:#6B6A65">Autorizado el</span><span style="font-weight:600">'+auth+'</span></div>':'')+
+        '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid #E0DED6;font-size:13px"><span style="color:#6B6A65">Válido hasta</span><span style="font-weight:600;color:'+color+'">'+hasta+'</span></div>'+
+        (vigente?'<div style="display:flex;justify-content:space-between;padding:7px 0;font-size:13px"><span style="color:#6B6A65">Días restantes</span><span style="font-weight:700;color:'+(diasRestantes<=5?'#854F0B':'#3B6D11')+'">'+diasRestantes+' días hábiles</span></div>':'<div style="padding:7px 0;font-size:13px;color:#791F1F;font-weight:600">⚠ Autorización vencida. No permitir ingreso.</div>')+
+      '</div>'+
+      (vigente?
+        '<div style="background:#E6F1FB;border-radius:10px;padding:14px;margin-bottom:12px">'+
+          '<div style="font-size:12px;font-weight:700;color:#0C447C;margin-bottom:6px">Registrar ingreso</div>'+
+          '<input id="portero-ver-input" placeholder="Tu nombre (portero/vigilante)" style="width:100%;height:42px;border:1.5px solid #C5C3BB;border-radius:8px;padding:0 12px;font-size:14px;font-family:inherit;margin-bottom:8px" value="'+(localStorage.getItem('portero_nombre')||'')+'">'+
+          '<button id="btn-reg-ver" style="width:100%;height:44px;border:none;background:#185FA5;color:white;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Confirmar ingreso</button>'+
+          '<div id="ingreso-result" style="margin-top:8px"></div>'+
+        '</div>':
+        '<div style="background:#FCEBEB;border-radius:10px;padding:14px;border:1px solid #F09595;font-size:13px;color:#791F1F;text-align:center">'+
+          '<strong>QR VENCIDO</strong><br>Esta autorización expiró el '+hasta+'.<br>No se permite el ingreso.'+
+        '</div>'
+      )+
+      '<div style="text-align:center;font-size:11px;color:#9E9C97;margin-top:8px">Código: '+cod+'</div>';
+    document.body.innerHTML='';
+    document.body.style.background='#F5F4F0';
+    document.body.appendChild(verDiv);
+    var btnRV=document.getElementById('btn-reg-ver');
+    if(btnRV){btnRV.addEventListener('click',function(){registrarIngresoVer(cod,nom,sede);});}
+  }
+};
+
+function registrarIngresoVer(cod,nom,sede){
+  var porteroInput=document.getElementById('portero-ver-input');
+  var portero=porteroInput?porteroInput.value.trim():'';
+  if(!portero){alert('Ingresa tu nombre.');return;}
+  localStorage.setItem('portero_nombre',portero);
+  var ahora=new Date();
+  var fecha=ahora.toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+ahora.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+  var accesos=JSON.parse(localStorage.getItem('accesos_'+cod)||'[]');
+  accesos.push({portero:portero,fecha:fecha,nom:nom,sede:sede,ts:ahora.getTime()});
+  localStorage.setItem('accesos_'+cod,JSON.stringify(accesos));
+  var log=JSON.parse(localStorage.getItem('log_accesos')||'[]');
+  log.push({cod:cod,portero:portero,fecha:fecha,nom:nom,sede:sede,ts:ahora.getTime()});
+  localStorage.setItem('log_accesos',JSON.stringify(log));
+  document.getElementById('ingreso-result').innerHTML='<div style="background:#EAF3DE;border-radius:8px;padding:10px;font-size:13px;color:#27500A;font-weight:600;text-align:center">✅ Ingreso registrado a las '+fecha+'</div>';
+}
+</script>
+</body>
+</html>
