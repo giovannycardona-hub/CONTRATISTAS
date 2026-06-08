@@ -572,10 +572,8 @@ function checkManual(){
   if(_manualOk){
     _manualTsConfirm=new Date();
     var tiempoMs=_manualTsAbrir?(_manualTsConfirm-_manualTsAbrir):0;
-    var tiempoMin=Math.round(tiempoMs/60000);
-    var tiempoSeg=Math.round(tiempoMs/1000);
-    var tiempoStr=tiempoMin>0?tiempoMin+' min':tiempoSeg+' seg';
-    document.getElementById('manual-result').innerHTML='<div class="alert a-ok">Manual confirmado. Tiempo de lectura: '+tiempoStr+'</div>';
+    // El tiempo de lectura NO se muestra al contratista; solo se registra para portería.
+    document.getElementById('manual-result').innerHTML='<div class="alert a-ok">Lectura del manual confirmada.</div>';
     window._manualTiempo=tiempoMs;
   } else {
     document.getElementById('manual-result').innerHTML='';
@@ -814,7 +812,7 @@ function enviar(){
   var obs=document.getElementById('p-obs').value;
   var sol={id:'SOL-'+Date.now(),num:'#'+String(Date.now()).slice(-6),nom:nom,doc:doc,emp:emp,area:area,sede:sede,mail:mail,tel:tel,obs:obs,
     cursos:JSON.parse(JSON.stringify(CURSOS)),pilaData:window._pilaData||{},
-    semaforo:window._semaforo,foto:FOTO_B64?FOTO_B64.slice(0,50000):null,docARL:window._docARL?window._docARL.slice(0,50000):null,ts:new Date(),estado:'pendiente'};
+    semaforo:window._semaforo,foto:FOTO_B64?FOTO_B64.slice(0,50000):null,docARL:window._docARL?window._docARL.slice(0,50000):null,manualLeido:true,manualTiempoMs:(window._manualTiempo||0),ts:new Date(),estado:'pendiente'};
   var xhrSend=new XMLHttpRequest();
   xhrSend.open('POST', API+'/solicitud', true);
   xhrSend.setRequestHeader('Content-Type','application/json');
@@ -851,6 +849,12 @@ function abrirManualMasivo(){
 function checkManualMasivo(){
   var chk=document.getElementById('chk-manual-masivo');
   _manualMasivoOk=chk&&chk.checked;
+  if(_manualMasivoOk){
+    var tsConfirm=new Date();
+    window._manualMasivoTiempo=_manualMasivoTs?(tsConfirm-_manualMasivoTs):0;
+  } else {
+    window._manualMasivoTiempo=0;
+  }
   updateProgMasivo();
 }
 
@@ -1024,7 +1028,7 @@ function enviarMasivo(){
       mail:p.mail,tel:p.cel,obs:'Ingreso masivo',
       cursos:{sst:p.sst,alt:'no',conf:'no',esp:'no'},
       pilaData:Object.assign({arl_nombre:p.arl,eps_nombre:p.eps,pension_fondo:p.pension},p.pilaData||window._masivopilaData||{}),
-      foto:p.foto,ts:new Date(),estado:'pendiente',alertas:[]
+      foto:p.foto,manualLeido:true,manualTiempoMs:(window._manualMasivoTiempo||0),ts:new Date(),estado:'pendiente',alertas:[]
     };
     sols.push(sol);
   });
